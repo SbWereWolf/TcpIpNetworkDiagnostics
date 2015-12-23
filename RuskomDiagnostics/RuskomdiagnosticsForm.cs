@@ -691,17 +691,28 @@ namespace RuskomDiagnostics
         /// <param name="e"></param>
         private void CheckUpdateButton_Click ( object sender , EventArgs e )
         {
-            this.CheckUpdate ( false , this.StartupRegistryKeyName ) ;
+            var startupRegistryKeyName = this.StartupRegistryKeyName ;
+            if ( startupRegistryKeyName != null )
+            {
+                this.CheckUpdate ( false , startupRegistryKeyName ) ;
+            }
         }
 
+        // ReSharper disable IdentifierWordIsNotInDictionary
         /// <summary>
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+
         private void проверитьОбновлениеToolStripMenuItem_Click
+            // ReSharper restore IdentifierWordIsNotInDictionary
             ( object sender , EventArgs e )
         {
-            this.CheckUpdate ( false , this.StartupRegistryKeyName ) ;
+            var startupRegistryKeyName = this.StartupRegistryKeyName ;
+            if ( startupRegistryKeyName != null )
+            {
+                this.CheckUpdate ( false , startupRegistryKeyName ) ;
+            }
         }
 
         /// <summary>
@@ -773,10 +784,16 @@ namespace RuskomDiagnostics
         /// </summary>
         private void ShowBalance ( )
         {
-            if ( this._initializeComplete )
+
+            var applicationName = this.ApplicationName;
+            if ( ( this._initializeComplete )
+                && (applicationName != null) )
             {
                 Handler.ShowBalance
-                    ( this.HostMenuNotifyIcon , this , this.ApplicationName ) ;
+                    (
+                        this.HostMenuNotifyIcon ,
+                        this ,
+                        applicationName ) ;
             }
         }
 
@@ -822,12 +839,12 @@ namespace RuskomDiagnostics
         {
             this.OpenPayWebPage( ) ;
         }
-
+        
+        // ReSharper disable IdentifierWordIsNotInDictionary
         /// <summary>
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        // ReSharper disable IdentifierWordIsNotInDictionary
         private void проверитьСкоростиToolStripMenuItem_Click
             // ReSharper restore IdentifierWordIsNotInDictionary
             ( object sender , EventArgs e )
@@ -867,10 +884,12 @@ namespace RuskomDiagnostics
                                   * this._communicationPeriodMilliseconds;
                 if (elapsedTime > this.DayInMilliseconds)
                 {
-                    var isUpdateChecked = this.CheckUpdate
-                        (
-                            isSilent: true,
-                            startupRegistryKeyName: this.StartupRegistryKeyName);
+                    var startupRegistryKeyName = this.StartupRegistryKeyName ;
+                    var isUpdateChecked = ( startupRegistryKeyName != null )
+                                          && this.CheckUpdate
+                                                 (
+                                                     true ,
+                                                     startupRegistryKeyName ) ;
 
                     if (isUpdateChecked)
                     {
@@ -881,11 +900,13 @@ namespace RuskomDiagnostics
             }
         }
 
+        // ReSharper disable IdentifierWordIsNotInDictionary
         /// <summary>
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void контактыToolStripMenuItem_Click(object sender, EventArgs e)
+            // ReSharper restore IdentifierWordIsNotInDictionary
         {
             this.ShowContacts();
         }
