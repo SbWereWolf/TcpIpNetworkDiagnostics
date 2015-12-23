@@ -135,12 +135,9 @@ namespace RuskomDiagnostics
                         Program = Handler.NetshProgram
                     };
 
-                if (batchParameters.ProgramsWithOutput != null)
-                {
-                    batchParameters.ProgramsWithOutput.Add
-                        (
-                            networkRequisitesProgram);
-                }
+                batchParameters.ProgramsWithOutput?.Add
+                    (
+                        networkRequisitesProgram);
 
                 var testConnectionThread = new Thread(this.PerformBatch);
                 testConnectionThread.Start
@@ -163,7 +160,7 @@ namespace RuskomDiagnostics
         /// <param name="someText"></param>
         private static void SetControlText
             (
-            Control textControl,
+            [ CanBeNull ] Control textControl,
             string someText)
         {
             if (textControl != null)
@@ -178,7 +175,7 @@ namespace RuskomDiagnostics
         /// </summary>
         private void SetBatchOutputToControl
             (
-            object input
+            [ CanBeNull ] object input
             )
         {
             var programWithOutput = (ProgramWithOutput) input;
@@ -189,27 +186,27 @@ namespace RuskomDiagnostics
                 var arguments = programWithOutput.ArgumentsString;
                 var textControl = programWithOutput.TextOutputControl;
 
-                var programOutput = Handler
-                    .ExecuteProgramWithArguments
-                    (
-                        program,
-                        arguments
-                    );
+                if ( arguments != null )
+                {
+                    var programOutput = Handler
+                        .ExecuteProgramWithArguments
+                        (
+                            program,
+                            arguments
+                        );
 
-                var setControlText = new SetControlValueDelegate
-                    (ShowNetworkRequisitesForm.SetControlText);
-                this.BeginInvoke
-                    (
-                        setControlText,
-                        textControl,
-                        programOutput);
+                    var setControlText = new SetControlValueDelegate
+                        (ShowNetworkRequisitesForm.SetControlText);
+                    this.BeginInvoke
+                        (
+                            setControlText,
+                            textControl,
+                            programOutput);
+                }
             }
 
             var onOnBatchFinish = this.OnBatchFinish;
-            if (onOnBatchFinish != null)
-            {
-                onOnBatchFinish();
-            }
+            onOnBatchFinish?.Invoke();
         }
 
         /// <summary>
@@ -217,31 +214,28 @@ namespace RuskomDiagnostics
         /// <param name="outputControlsObject"></param>
         private void PerformBatch
             (
-            object outputControlsObject)
+            [ CanBeNull ] object outputControlsObject)
         {
             var parameters = (BatchWithProgressbar) outputControlsObject;
 
-            if (parameters != null)
+            if (parameters?.ProgramsWithOutput != null)
             {
-                if (parameters.ProgramsWithOutput != null)
-                {
-                    var textBoxes = parameters.ProgramsWithOutput
-                                              .Where
-                        (
-                            programWithOutput => programWithOutput != null)
-                                              .Select
-                        (
-                            programWithOutput =>
-                            programWithOutput.TextOutputControl)
-                                              .ToList();
+                var textBoxes = parameters.ProgramsWithOutput
+                                          .Where
+                    (
+                        programWithOutput => programWithOutput != null)
+                                          .Select
+                    (
+                        programWithOutput =>
+                        programWithOutput.TextOutputControl)
+                                          .ToList();
 
                     
-                    ShowNetworkRequisitesForm.SetControlsText
-                        (
-                            Handler.NetworkRequisitesWillBeHere,
-                            textBoxes
-                        );
-                }
+                ShowNetworkRequisitesForm.SetControlsText
+                    (
+                        Handler.NetworkRequisitesWillBeHere ?? string.Empty,
+                        textBoxes
+                    );
             }
 
             if (parameters != null)
@@ -282,7 +276,7 @@ namespace RuskomDiagnostics
         private static void SetControlsText
             (
             string textValue,
-            IEnumerable<Control> textControls)
+            [ CanBeNull ] IEnumerable<Control> textControls)
         {
             if (textControls != null)
             {
@@ -291,14 +285,11 @@ namespace RuskomDiagnostics
                     var setText = new SetControlValueDelegate
                         (ShowNetworkRequisitesForm.SetControlText);
                     var box = textBox;
-                    if (box != null)
-                    {
-                        box.BeginInvoke
-                            (
-                                setText,
-                                box,
-                                textValue);
-                    }
+                    box?.BeginInvoke
+                        (
+                            setText,
+                            box,
+                            textValue);
                 }
             }
         }
@@ -327,25 +318,22 @@ namespace RuskomDiagnostics
             EventArgs e)
         {
             var outputsControls = this._outputsControls;
-            if (outputsControls != null)
+            var outputText =
+                outputsControls?.Where
+                    (
+                        outputsControl =>
+                        outputsControl != null)
+                                .Aggregate
+                    (
+                        string.Empty,
+                        (current,
+                         outputsControl) =>
+                        $"{current}{outputsControl.Text}{Environment.NewLine}" );
+            if (outputText != null)
             {
-                var outputText =
-                    outputsControls.Where
-                        (
-                            outputsControl =>
-                            outputsControl != null)
-                                   .Aggregate
-                        (
-                            string.Empty,
-                            (current,
-                             outputsControl) =>
-                            $"{current}{outputsControl.Text}{Environment.NewLine}" );
-                if (outputText != null)
-                {
-                    Clipboard.SetText
-                        (
-                            outputText);
-                }
+                Clipboard.SetText
+                    (
+                        outputText);
             }
         }
 
