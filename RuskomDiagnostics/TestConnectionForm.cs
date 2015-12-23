@@ -14,11 +14,11 @@ namespace RuskomDiagnostics
     {
         /// <summary>
         /// </summary>
-        private readonly bool _formShown ;
+        private bool FormShown { get ; }
 
         /// <summary>
         /// </summary>
-        private readonly List < Control > _outputsControls ;
+        private List < Control > OutputsControls { get ; }
 
         /// <summary>
         /// 
@@ -28,9 +28,9 @@ namespace RuskomDiagnostics
             this.InitializeComponent( ) ;
             this.OnExecutableFinish += this.WatchDog ;
 
-            this._formShown = false ;
+            this.FormShown = false ;
 
-            this._outputsControls = new List < Control >
+            this.OutputsControls = new List < Control >
                                     {
                                         this.PingGatewayTextBox ,
                                         this.PingDnsTextBox ,
@@ -75,7 +75,7 @@ namespace RuskomDiagnostics
                 && Handler.ConnectionFineQuality != null
                 )
             {
-                var testParameters = this.InitilizeTestParameters
+                var testParameters = this.InitializeTestParameters
                     (
                      null
                      , null
@@ -84,41 +84,26 @@ namespace RuskomDiagnostics
 
                 var mayReportBadQuality = false;
 
-                if (testParameters != null)
+                if (testParameters.ProgramsWithOutput != null)
                 {
-                    if (testParameters.ProgramsWithOutput != null)
+                    foreach (var programsComponent in testParameters.ProgramsWithOutput)
                     {
-                        foreach (var programsComponent in testParameters.ProgramsWithOutput)
+                        if (
+                            programsComponent?.TextOutputControl?.Text != null )
                         {
+                            mayReportBadQuality =
+                                programsComponent.TextOutputControl.Text
+                                                 .Contains
+                                    (Handler.ConnectionLoses)
+                                && ! programsComponent.TextOutputControl.Text
+                                                      .Contains
+                                         (Handler.ConnectionFineQuality)
+                                ;
+                        }
 
-                            if (programsComponent != null)
-                            {
-
-                                if (programsComponent.TextOutputControl != null)
-                                {
-                                    if (
-                                        programsComponent.TextOutputControl.Text
-                                        != null )
-                                    {
-                                        mayReportBadQuality =
-                                            programsComponent.TextOutputControl.Text
-                                                             .Contains
-                                                (Handler.ConnectionLoses)
-                                                && ! programsComponent.TextOutputControl.Text
-                                                             .Contains
-                                                (Handler.ConnectionFineQuality)
-                                                ;
-                                    }
-                                }
-
-
-
-                            }
-
-                            if (mayReportBadQuality)
-                            {
-                                break;
-                            }
+                        if (mayReportBadQuality)
+                        {
+                            break;
                         }
                     }
                 }
@@ -193,17 +178,17 @@ namespace RuskomDiagnostics
 
                 if ( interfacesNumber <= 0 )
                 {
-                    TestConnectionForm.SetTextboxesText
-                        (
-                            Handler.DisconnectOrInvalidConnection
-                            , this._outputsControls
-                        ) ;
+                    if ( Handler.DisconnectOrInvalidConnection != null )
+                    {
+                        TestConnectionForm.SetTextboxesText
+                            (
+                                Handler.DisconnectOrInvalidConnection
+                                , this.OutputsControls
+                            ) ;
+                    }
                     this._completedTestsCount = 8 ;
                     var onExecutableFinish = this.OnExecutableFinish ;
-                    if ( onExecutableFinish != null )
-                    {
-                        onExecutableFinish( ) ;
-                    }
+                    onExecutableFinish?.Invoke( ) ;
                 }
                 else
                 {
@@ -219,7 +204,7 @@ namespace RuskomDiagnostics
                     {
                         progressControl.Value = progressControl.Minimum ;
 
-                        var testParameters = this.InitilizeTestParameters
+                        var testParameters = this.InitializeTestParameters
                             (
                              progressControl
                              , gatewayAddress
@@ -234,8 +219,17 @@ namespace RuskomDiagnostics
             }
         }
 
-        private BatchWithProgressbar InitilizeTestParameters
-            ( ProgressBar progressControl , string gatewayAddress , string dnsAddress )
+        /// <summary>
+        /// </summary>
+        /// <param name="progressControl"></param>
+        /// <param name="gatewayAddress"></param>
+        /// <param name="dnsAddress"></param>
+        /// <returns></returns>
+        private BatchWithProgressbar InitializeTestParameters
+            (
+            [ CanBeNull ] ProgressBar progressControl ,
+            [ CanBeNull ] string gatewayAddress ,
+            [ CanBeNull ] string dnsAddress )
         {
             var testParameters = new BatchWithProgressbar
                 ( progressControl ) ;
@@ -326,7 +320,7 @@ namespace RuskomDiagnostics
         /// <param name="someString"></param>
         private static void SetControlText
             (
-            TextBoxBase textOutputControl,
+            [ CanBeNull ] TextBoxBase textOutputControl,
             string someString)
         {
             if ( textOutputControl != null )
@@ -344,7 +338,7 @@ namespace RuskomDiagnostics
         /// </summary>
         private void SetProgramOutputToControl
             (
-            object input
+            [ CanBeNull ] object input
             )
         {
             var programOutputToControl = ( ProgramWithOutput ) input ;
@@ -355,97 +349,95 @@ namespace RuskomDiagnostics
                 var hostName = programOutputToControl.ArgumentsString ;
                 var textControl = programOutputToControl.TextOutputControl ;
 
-                var programOutput = Handler.ExecuteProgramWithArguments
-                    (
-                     program ,
-                     hostName
-                    ) ;
-                if ( program != null
-                     && Handler.PingProgram != null )
+                if ( hostName != null )
                 {
-                    if ( program.ExecutableFile
-                         == Handler.PingProgram.ExecutableFile )
+                    var programOutput = Handler.ExecuteProgramWithArguments
+                        (
+                            program ,
+                            hostName
+                        ) ;
+                    if ( ( program != null )
+                         && ( Handler.PingProgram != null ) )
                     {
-                        var connectionsFineQualitySymptom =
-                            Handler.ConnectionsFineQualitySymptom ;
-                        if ( connectionsFineQualitySymptom != null )
+                        if ( program.ExecutableFile
+                             == Handler.PingProgram.ExecutableFile )
                         {
+                            var connectionsFineQualitySymptom =
+                                Handler.ConnectionsFineQualitySymptom ;
+                            if ( connectionsFineQualitySymptom != null )
                             {
-                                var substringExists = programOutput.IndexOf
-                                    (
-                                        connectionsFineQualitySymptom ,
-                                        StringComparison.Ordinal ) ;
+                                {
+                                    var substringExists = programOutput.IndexOf
+                                        (
+                                            connectionsFineQualitySymptom ,
+                                            StringComparison.Ordinal ) ;
 
-                                programOutput +=
-                                    (
-                                        substringExists > 0
-                                            ? $"{Handler.ConnectionFineQuality}{Environment.NewLine}"
-                                            : $"{Handler.ConnectionLoses}{Environment.NewLine}" ) ;
+                                    programOutput +=
+                                        (
+                                            substringExists > 0
+                                                ? $"{Handler.ConnectionFineQuality}{Environment.NewLine}"
+                                                : $"{Handler.ConnectionLoses}{Environment.NewLine}" ) ;
+                                }
                             }
                         }
                     }
-                }
 
-                var setControlText = new SetTextBoxValueDelegate
-                    ( TestConnectionForm.SetControlText ) ;
-                this.BeginInvoke
-                    (
-                     setControlText ,
-                     textControl ,
-                     programOutput ) ;
+                    var setControlText = new SetTextBoxValueDelegate
+                        ( TestConnectionForm.SetControlText ) ;
+                    this.BeginInvoke
+                        (
+                            setControlText ,
+                            textControl ,
+                            programOutput ) ;
+                }
             }
 
             var onExecutableFinish = this.OnExecutableFinish ;
-            if ( onExecutableFinish != null )
-            {
-                onExecutableFinish( ) ;
-            }
+            onExecutableFinish?.Invoke( ) ;
         }
 
         /// <summary>
         /// </summary>
         /// <param name="outputControlsObject"></param>
-        private void PerformTestConnection ( object outputControlsObject )
+        private void PerformTestConnection (
+            [ CanBeNull ] object outputControlsObject )
         {
             var parameters = ( BatchWithProgressbar ) outputControlsObject ;
 
-            if ( parameters != null )
+            if ( parameters?.ProgramsWithOutput != null )
             {
-                if ( parameters.ProgramsWithOutput != null )
-                {
-                    var textBoxes = parameters.ProgramsWithOutput
-                                              .Where
-                        (
-                            methodParameters => methodParameters != null)
-                                              .Where
-                        (
-                            methodParameters =>
-                            methodParameters.TextOutputControl != null)
-                                              .Select
-                        (
-                            methodParameters =>
-                            methodParameters.TextOutputControl)
-                                              .ToList();
+                var textBoxes = parameters.ProgramsWithOutput
+                                          .Where
+                    (
+                        methodParameters => methodParameters != null)
+                                          .Where
+                    (
+                        methodParameters =>
+                        methodParameters.TextOutputControl != null)
+                                          .Select
+                    (
+                        methodParameters =>
+                        methodParameters.TextOutputControl)
+                                          .ToList();
 
+                if ( Handler.WaitWhileTestProcessed != null )
+                {
                     TestConnectionForm.SetTextboxesText
                         (
-                         Handler.WaitWhileTestProcessed,
-                         textBoxes
+                            Handler.WaitWhileTestProcessed ?? string.Empty,
+                            textBoxes
                         ) ;
                 }
             }
 
-            if ( parameters != null )
+            if ( parameters?.ProgramsWithOutput != null )
             {
-                if ( parameters.ProgramsWithOutput != null )
+                foreach (
+                    var methodParameters in parameters.ProgramsWithOutput )
                 {
-                    foreach (
-                        var methodParameters in parameters.ProgramsWithOutput )
-                    {
-                        var thread = new Thread
-                            ( this.SetProgramOutputToControl ) ;
-                        thread.Start ( methodParameters ) ;
-                    }
+                    var thread = new Thread
+                        ( this.SetProgramOutputToControl ) ;
+                    thread.Start ( methodParameters ) ;
                 }
             }
         }
@@ -474,14 +466,11 @@ namespace RuskomDiagnostics
                 {
                     var setText = new SetTextBoxValueDelegate ( TestConnectionForm.SetControlText ) ;
                     var box = textBox ;
-                    if ( box != null )
-                    {
-                        box.BeginInvoke
-                            (
-                             setText ,
-                             box ,
-                             setValue ) ;
-                    }
+                    box?.BeginInvoke
+                        (
+                            setText ,
+                            box ,
+                            setValue ) ;
                 }
             }
         }
@@ -507,22 +496,19 @@ namespace RuskomDiagnostics
             object sender ,
             EventArgs e )
         {
-            var outputsControls = this._outputsControls ;
-            if ( outputsControls != null )
+            var outputsControls = this.OutputsControls ;
+            var outputText = outputsControls?.Where
+                ( outputsControl => outputsControl != null )
+                                             .Aggregate
+                (
+                    string.Empty ,
+                    ( current ,
+                      outputsControl ) =>
+                    $"{current}{Environment.NewLine}{outputsControl.Text}"
+                ) ;
+            if ( outputText != null )
             {
-                var outputText = outputsControls.Where
-                    ( outputsControl => outputsControl != null )
-                                                .Aggregate
-                    (
-                     string.Empty ,
-                     ( current ,
-                       outputsControl ) =>
-                     $"{current}{Environment.NewLine}{outputsControl.Text}"
-                    ) ;
-                if ( outputText != null )
-                {
-                    Clipboard.SetText ( outputText ) ;
-                }
+                Clipboard.SetText ( outputText ) ;
             }
         }
 
@@ -535,7 +521,7 @@ namespace RuskomDiagnostics
             object sender ,
             EventArgs e )
         {
-            if ( this._formShown )
+            if ( this.FormShown )
             {
                 return ;
             }
@@ -556,6 +542,10 @@ namespace RuskomDiagnostics
             this.TestConnection( ) ;
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DoReportProblemButton_Click(object sender, EventArgs e)
         {
 

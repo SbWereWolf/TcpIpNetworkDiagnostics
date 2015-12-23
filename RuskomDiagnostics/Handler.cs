@@ -94,7 +94,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         /// 
         /// </summary>
         /// <param name="progressBar"></param>
-        public BatchWithProgressbar ( ProgressBar progressBar )
+        public BatchWithProgressbar ( [ CanBeNull ] ProgressBar progressBar )
         {
             this.ProgramsWithOutput = new List < ProgramWithOutput >( ) ;
             this.ProgressBar = progressBar ;
