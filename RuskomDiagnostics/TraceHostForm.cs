@@ -60,10 +60,7 @@ namespace RuskomDiagnostics
                     tracert.HostNameOrAddress = hostAddressTextBox.Text ;
                 }
                 var routeListView = this.RouteListView ;
-                if ( routeListView != null )
-                {
-                    routeListView.Items.Clear( ) ;
-                }
+                routeListView?.Items.Clear( ) ;
                 try
                 {
                     tracert.Trace( ) ;
@@ -87,7 +84,8 @@ namespace RuskomDiagnostics
         /// <summary>
         /// </summary>
         /// <param name="ar"></param>
-        private void OnGetHostEntry ( IAsyncResult ar )
+        private void OnGetHostEntry (
+            [ CanBeNull ] IAsyncResult ar )
         {
             try
             {
@@ -127,46 +125,39 @@ namespace RuskomDiagnostics
         private void tracert_RouteNodeFound
             (
             object sender ,
-            RouteNodeFoundEventArgs e )
+            [ CanBeNull ] RouteNodeFoundEventArgs e )
         {
             var routeListView = this.RouteListView ;
             if ( routeListView != null )
             {
-                if ( e != null )
+                if ( e?.NodeProperty != null )
                 {
-                    if ( e.NodeProperty != null )
                     {
+                        var item = routeListView.Items.Add
+                            ( e.NodeProperty.Address.ToString( ) ) ;
+                        var listViewItem =
+                            routeListView.Items[ routeListView.Items.Count - 1 ] ;
+                        listViewItem?.EnsureVisible( ) ;
+
+                        item.SubItems.Add
+                            (
+                                ( item.Index + 1 ).ToString
+                                    ( CultureInfo.InvariantCulture ) ) ;
+                        var hostNameItem = item.SubItems.Add ( string.Empty ) ;
+                        item.SubItems.Add
+                            (
+                                e.NodeProperty.Status == IPStatus.Success
+                                    ? e.NodeProperty.RoundTripTime.ToString
+                                          ( CultureInfo.InvariantCulture )
+                                    : "*" ) ;
+
+                        if ( e.NodeProperty.Status == IPStatus.Success )
                         {
-                            var item = routeListView.Items.Add
-                                ( e.NodeProperty.Address.ToString( ) ) ;
-                            var listViewItem =
-                                routeListView.Items[ routeListView.Items.Count - 1 ] ;
-                            if ( listViewItem
-                                 != null )
-                            {
-                                listViewItem.EnsureVisible( ) ;
-                            }
-
-                            item.SubItems.Add
+                            Dns.BeginGetHostEntry
                                 (
-                                    ( item.Index + 1 ).ToString
-                                        ( CultureInfo.InvariantCulture ) ) ;
-                            var hostNameItem = item.SubItems.Add ( string.Empty ) ;
-                            item.SubItems.Add
-                                (
-                                    e.NodeProperty.Status == IPStatus.Success
-                                        ? e.NodeProperty.RoundTripTime.ToString
-                                              ( CultureInfo.InvariantCulture )
-                                        : "*" ) ;
-
-                            if ( e.NodeProperty.Status == IPStatus.Success )
-                            {
-                                Dns.BeginGetHostEntry
-                                    (
-                                        e.NodeProperty.Address ,
-                                        this.OnGetHostEntry ,
-                                        hostNameItem ) ;
-                            }
+                                    e.NodeProperty.Address ,
+                                    this.OnGetHostEntry ,
+                                    hostNameItem ) ;
                         }
                     }
                 }
@@ -193,11 +184,7 @@ namespace RuskomDiagnostics
                     var item = routeListView.Items.Add ( hostName ) ;
                     var listViewItem =
                         routeListView.Items[ routeListView.Items.Count - 1 ] ;
-                    if ( listViewItem
-                         != null )
-                    {
-                        listViewItem.EnsureVisible( ) ;
-                    }
+                    listViewItem?.EnsureVisible( ) ;
                     item.SubItems.Add
                         (
                          ( item.Index + 1 ).ToString
@@ -226,11 +213,10 @@ namespace RuskomDiagnostics
             object sender ,
             KeyEventArgs e )
         {
-            if ( e != null
-                 && e.KeyCode == Keys.Enter )
+            if ( ( e.KeyCode == Keys.Enter ) )
             {
                 var doTraceRouteButton = this.DoTraceRouteButton ;
-                if ( doTraceRouteButton != null
+                if ( ( doTraceRouteButton != null )
                      && doTraceRouteButton.Enabled )
                 {
                     this.DoTraceRouteButton_Click
@@ -295,10 +281,10 @@ namespace RuskomDiagnostics
         /// <param name="rowsSeparator"></param>
         private static void CopyListViewContentToClipboard
             (
-            ListView routeListView ,
-            string defaultColumnName ,
-            string defaultCellText ,
-            string rowsSeparator
+            [ CanBeNull ] ListView routeListView ,
+            [ CanBeNull ] string defaultColumnName ,
+            [ CanBeNull ] string defaultCellText ,
+            [ CanBeNull ] string rowsSeparator
             )
         {
             var content = TraceHostForm.GetListViewContentAsString
@@ -323,10 +309,10 @@ namespace RuskomDiagnostics
         [ NotNull ]
         private static string GetListViewContentAsString
             (
-            ListView routeListView ,
-            string defaultColumnName ,
-            string defaultCellText ,
-            string rowsSeparator
+            [ CanBeNull ] ListView routeListView ,
+            [CanBeNull] string defaultColumnName ,
+            [CanBeNull] string defaultCellText ,
+            [CanBeNull] string rowsSeparator
             )
         {
             var contentAsText = string.Empty ;
@@ -339,7 +325,7 @@ namespace RuskomDiagnostics
                     defaultCellText,
                     rowsSeparator);
             }
-            return contentAsText ??  string.Empty;
+            return contentAsText;
         }
 
         /// <summary>
@@ -351,27 +337,32 @@ namespace RuskomDiagnostics
         /// <returns></returns>
         private static string GetListViewText
             (
-            [NotNull] ListView listView,
-            string defaultColumnName,
-            string defaultCellText,
-            string rowsSeparator)
+            [CanBeNull] ListView listView,
+            [CanBeNull] string defaultColumnName,
+            [CanBeNull] string defaultCellText,
+            [CanBeNull] string rowsSeparator)
         {
             var listViewContentBuilder = new StringBuilder();
 
-            for (var rowsCounter = 0;
-                rowsCounter < listView.Items.Count;
-                rowsCounter++)
+            if ( listView != null )
             {
-                TraceHostForm.GetListViewRowText
-                    (
-                        listView,
-                        defaultColumnName,
-                        defaultCellText,
-                        rowsCounter,
-                        listViewContentBuilder);
-                listViewContentBuilder.Append
-                    (
-                        rowsSeparator);
+                var columncount = listView.Items.Count ;
+
+                for (var rowsCounter = 0;
+                     rowsCounter < columncount;
+                     rowsCounter++)
+                {
+                    TraceHostForm.GetListViewRowText
+                        (
+                            listView,
+                            defaultColumnName,
+                            defaultCellText,
+                            rowsCounter,
+                            listViewContentBuilder);
+                    listViewContentBuilder.Append
+                        (
+                            rowsSeparator);
+                }
             }
             var contentAsText = listViewContentBuilder.ToString();
             return contentAsText;
@@ -386,33 +377,44 @@ namespace RuskomDiagnostics
         /// <param name="listViewContentBuilder"></param>
         private static void GetListViewRowText
             (
-            [NotNull] ListView routeListView,
-            string defaultColumnName,
-            string defaultCellText,
-            int rowsCounter,
-            [NotNull] StringBuilder listViewContentBuilder)
+            [ CanBeNull ] ListView routeListView ,
+            [ CanBeNull ] string defaultColumnName ,
+            [ CanBeNull ] string defaultCellText ,
+            int rowsCounter ,
+            [ CanBeNull ] StringBuilder listViewContentBuilder )
         {
-            for (var columnsCounter = 0;
-                columnsCounter < routeListView.Columns.Count;
-                columnsCounter++)
+            if ( routeListView != null )
             {
-                var columnName = TraceHostForm.GetColumnName
-                    (
-                        routeListView,
-                        defaultColumnName,
-                        columnsCounter);
+                var columnsCount = routeListView.Columns.Count ;
+                for ( var columnsCounter = 0 ;
+                      columnsCounter < columnsCount ;
+                      columnsCounter++ )
+                {
+                    if ( ( defaultColumnName != null )
+                         && ( defaultCellText != null ))
+                    {
+                        var columnName = TraceHostForm.GetColumnName
+                            (
+                                routeListView ,
+                                defaultColumnName ,
+                                columnsCounter ) ;
 
-                var cellText = TraceHostForm.GetCellText
-                    (
-                        routeListView,
-                        defaultCellText,
-                        rowsCounter,
-                        columnsCounter);
+                        var cellText = TraceHostForm.GetCellText
+                            (
+                                routeListView ,
+                                defaultCellText ,
+                                rowsCounter ,
+                                columnsCounter ) ;
 
-                var text = $" {columnName} : '{cellText}' ;" ;
-                listViewContentBuilder.Append
-                    (
-                        text);
+                        var text = $" {columnName} : '{cellText}' ;" ;
+                        listViewContentBuilder?.Append
+                            (
+                                text);
+                    }
+
+
+
+                }
             }
         }
 
@@ -423,22 +425,22 @@ namespace RuskomDiagnostics
         /// <param name="rowsCounter"></param>
         /// <param name="columnsCounter"></param>
         /// <returns></returns>
+        [ CanBeNull ]
         private static string GetCellText
             (
-            [NotNull] ListView listView,
-            string defaultCellText,
+            [ CanBeNull ] ListView listView,
+            [ CanBeNull ] string defaultCellText,
             int rowsCounter,
             int columnsCounter)
         {
             var cellText = string.Empty;
             try
             {
-                var listViewItem =
-                    listView.Items[rowsCounter];
-                if (listViewItem != null)
+                if ( listView != null )
                 {
-                    var listViewSubItem = listViewItem
-                        .SubItems[columnsCounter];
+                    var listViewItem =
+                        listView.Items[rowsCounter];
+                    var listViewSubItem = listViewItem?.SubItems[columnsCounter];
                     if (listViewSubItem != null)
                     {
                         cellText =
@@ -460,9 +462,10 @@ namespace RuskomDiagnostics
         /// <param name="defaultColumnName"></param>
         /// <param name="columnsCounter"></param>
         /// <returns></returns>
+        [ CanBeNull ]
         private static string GetColumnName
             (
-            [NotNull] ListView routeListView,
+            [ CanBeNull ] ListView routeListView,
             string defaultColumnName,
             int columnsCounter)
         {
@@ -470,7 +473,7 @@ namespace RuskomDiagnostics
             try
             {
                 var columnHeader =
-                    routeListView.Columns[columnsCounter];
+                    routeListView?.Columns[columnsCounter];
                 if (columnHeader != null)
                 {
                     columnName = columnHeader.Text;
