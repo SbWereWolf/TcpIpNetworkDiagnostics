@@ -3,30 +3,21 @@ using System;
 namespace RuskomDiagnostics
 {
     /// <summary>
-    // ReSharper disable WordCanBeSurroundedWithMetaTags
-    /// Provides data for the RouteCompleted event of Tracert
-    // ReSharper restore WordCanBeSurroundedWithMetaTags
+    /// Provides data for the RouteCompleted event of <see cref="Tracert"/>
     /// </summary>
     public class RouteNodeFoundEventArgs : EventArgs
     {
         /// <summary>
-        /// </summary>
-        private readonly TracertNode _node ;
-
-        /// <summary>
         /// A node encountered during the route tracing.
         /// </summary>
-        public TracertNode NodeProperty
-        {
-            get { return this._node ; }
-        }
+        public TracertNode NodeProperty { get ; }
 
         /// <summary>
         /// </summary>
         /// <param name="node"></param>
         protected internal RouteNodeFoundEventArgs ( TracertNode node )
         {
-            this._node = node ;
+            this.NodeProperty = node ;
         }
     }
 }
