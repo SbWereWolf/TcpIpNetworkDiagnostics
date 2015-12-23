@@ -330,13 +330,13 @@ namespace RuskomDiagnostics
                 var userStartUpRunApplicationRegistryKey =
                     this._userStartUpRegistryKey ;
                 var startupRegistryKeyName = this.StartupRegistryKeyName ;
-                if ( toolStripMenuItem != null
-                     && userStartUpRunApplicationRegistryKey != null
-                     && startupRegistryKeyName != null )
+                if ( ( toolStripMenuItem != null )
+                     && ( userStartUpRunApplicationRegistryKey != null )
+                     && ( startupRegistryKeyName != null ) )
                 {
                     var applicationsExecutablePath = this.ApplicationExecutablePath ;
                     var applicationName = this.ApplicationName;
-                    if ( applicationsExecutablePath != null
+                    if ( ( applicationsExecutablePath != null )
                         && (applicationName != null))
                     {
                         Handler.ProcessAutoRunOption
@@ -384,7 +384,7 @@ namespace RuskomDiagnostics
             {
                 var hostMenuNotifyIcon = this.HostMenuNotifyIcon ;
                 var applicationName = this.ApplicationName;
-                if ( hostMenuNotifyIcon != null 
+                if ( ( hostMenuNotifyIcon != null ) 
                     && (applicationName != null))
                 {
                     Handler.SetBalanceMessage
@@ -577,8 +577,8 @@ namespace RuskomDiagnostics
 
                 var postDiagnosticsResponceFormat =
                     this.PostDiagnosticsResponceFormat ;
-                if ( responce != null
-                     && postDiagnosticsResponceFormat != null )
+                if ( ( responce != null )
+                     && ( postDiagnosticsResponceFormat != null ) )
                 {
                     var serverResponce = string.Format
                         (
@@ -638,12 +638,12 @@ namespace RuskomDiagnostics
             var applicationExecutablePath = this.ApplicationExecutablePath ;
             var startupRegistryKeyName = this.StartupRegistryKeyName ;
             var toolStripMenuItem = this.autorunToolStripMenuItem ;
-            var isMenuItemChecked = toolStripMenuItem != null
+            var isMenuItemChecked = ( toolStripMenuItem != null )
                                     && toolStripMenuItem.Checked ;
 
             if ( isMenuItemChecked )
             {
-                if ( userStartUpRunApplicationRegistryKey != null
+                if ( ( userStartUpRunApplicationRegistryKey != null )
                      && ( startupRegistryKeyName != null ) )
                 {
                     Handler.ProcessAutoRunOption
@@ -663,9 +663,9 @@ namespace RuskomDiagnostics
                      MessageBoxButtons.YesNo , MessageBoxIcon.Question ) ;
                 if ( userDecision == DialogResult.Yes )
                 {
-                    if ( userStartUpRunApplicationRegistryKey != null
-                         && applicationExecutablePath != null
-                         && startupRegistryKeyName != null )
+                    if ( ( userStartUpRunApplicationRegistryKey != null )
+                         && ( applicationExecutablePath != null )
+                         && ( startupRegistryKeyName != null ) )
                     {
                         Handler.ProcessAutorun
                             (
@@ -843,8 +843,8 @@ namespace RuskomDiagnostics
             ( object sender , FormClosingEventArgs e )
         {
             var hostMenuNotifyIcon = this.HostMenuNotifyIcon ;
-            if ( hostMenuNotifyIcon != null
-                 && Settings.Default != null )
+            if ( ( hostMenuNotifyIcon != null )
+                 && ( Settings.Default != null ) )
             {
                 Settings.Default.BalanceString = hostMenuNotifyIcon.Text ;
                 Settings.Default.Save( ) ;

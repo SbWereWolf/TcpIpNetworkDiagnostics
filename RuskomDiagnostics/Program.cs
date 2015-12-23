@@ -92,8 +92,8 @@ namespace RuskomDiagnostics
                     var osMajorVersion = Environment.OSVersion.Version.Major ;
                     var osMinorVersion = Environment.OSVersion.Version.Minor ;
 
-                    if ( osMajorVersion <= Program.Windows7MajorVersion
-                         && osMinorVersion <= Program.Windows7MinorVersion )
+                    if ( ( osMajorVersion <= Program.Windows7MajorVersion )
+                         && ( osMinorVersion <= Program.Windows7MinorVersion ) )
                     {
                         bool result ;
                         var mutex = new Mutex

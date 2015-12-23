@@ -6,18 +6,20 @@ using System.Net.NetworkInformation;
 
 namespace RuskomDiagnostics
 {
+    // ReSharper disable WordIsNotInDictionary
     /// <summary>
     /// A component which provides network route tracing functionality similar to tracert.exe
     /// </summary>
+    /// // ReSharper restore WordIsNotInDictionary
     public class Tracert : Component
     {
         /// <summary>
         /// </summary>
-        private Ping _ping;
+        private Ping Ping1 { get ; set ; }
 
         /// <summary>
         /// </summary>
-        private List<TracertNode> _nodesList;
+        private List < TracertNode > NodesList { get ; set ; }
 
         /// <summary>
         /// </summary>
@@ -25,11 +27,11 @@ namespace RuskomDiagnostics
 
         /// <summary>
         /// </summary>
-        private IPAddress _destination;
+        private IPAddress Destination { get ; set ; }
 
         /// <summary>
         /// </summary>
-        private PingOptions _tracerPingOptions;
+        private PingOptions TracerPingOptions { get ; set ; }
 
         /// <summary>
         /// Fires when route tracing is done
@@ -89,9 +91,9 @@ namespace RuskomDiagnostics
             {
                 this._isDone = value;
 
-                if (value && this.Done != null)
+                if (value)
                 {
-                    this.Done
+                    this.Done?.Invoke
                         (
                             this,
                             EventArgs.Empty);
@@ -106,7 +108,7 @@ namespace RuskomDiagnostics
 
         /// <summary>
         /// </summary>
-        private static byte[] OperativeBuffer;
+        private static byte [ ] OperativeBuffer { get ; set ; }
 
         /// <summary>
         /// </summary>
@@ -134,13 +136,13 @@ namespace RuskomDiagnostics
         /// </summary>
         public void Trace()
         {
-            if (this._ping != null)
+            if (this.Ping1 != null)
             {
                 throw new InvalidOperationException
                     ("This object is already in use");
             }
 
-            this._nodesList = new List<TracertNode>();
+            this.NodesList = new List<TracertNode>();
 
             var hostNameOrAddress = this._hostNameOrAddress;
             if (hostNameOrAddress != null)
@@ -151,17 +153,17 @@ namespace RuskomDiagnostics
                                      .AddressList;
                 if (addressList != null)
                 {
-                    this._destination = addressList[0];
+                    this.Destination = addressList[0];
                 }
             }
 
-            var ipAddress = this._destination;
-            if (ipAddress != null
+            var ipAddress = this.Destination;
+            if (( ipAddress != null )
                 && IPAddress.IsLoopback
                        (
                            ipAddress))
             {
-                var destination = this._destination;
+                var destination = this.Destination;
                 if (destination != null)
                 {
                     this.ProcessNode
@@ -174,27 +176,27 @@ namespace RuskomDiagnostics
             {
 
                 // ReSharper disable InconsistentlySynchronizedField
-                this._ping = new Ping();
+                this.Ping1 = new Ping();
                 // ReSharper restore InconsistentlySynchronizedField
 
-                this._ping.PingCompleted += this.OnPingCompleted;
-                this._tracerPingOptions = new PingOptions
+                this.Ping1.PingCompleted += this.OnPingCompleted;
+                this.TracerPingOptions = new PingOptions
                     (
                     1,
                     true);
-                var destination = this._destination;
+                var destination = this.Destination;
                 if (destination != null)
                 {
                     if (Tracert.Buffer != null)
                     {
                         // ReSharper disable InconsistentlySynchronizedField
-                        this._ping.SendAsync
+                        this.Ping1.SendAsync
                             // ReSharper restore InconsistentlySynchronizedField
                             (
                                 destination,
                                 this._timeout,
                                 Tracert.Buffer,
-                                this._tracerPingOptions,
+                                this.TracerPingOptions,
                                 null);
                     }
                 }
@@ -209,20 +211,17 @@ namespace RuskomDiagnostics
         private void OnPingCompleted
             (
             object sender,
-            PingCompletedEventArgs e)
+            [ Annotations.CanBeNull ] PingCompletedEventArgs e)
         {
-            if (e != null)
+            if ( e?.Reply?.Address != null )
             {
-                if (e.Reply != null)
-                {
-                    this.ProcessNode
-                        (
-                            e.Reply.Address,
-                            e.Reply.Status);
-                }
+                this.ProcessNode
+                    (
+                        e.Reply.Address,
+                        e.Reply.Status);
             }
 
-            var tracerPingOptions = this._tracerPingOptions;
+            var tracerPingOptions = this.TracerPingOptions;
             if (tracerPingOptions != null)
             {
                 tracerPingOptions.Ttl += 1;
@@ -232,20 +231,24 @@ namespace RuskomDiagnostics
                     lock (this)
                     {
                         //The expectation was that SendAsync will throw an exception
-                        if (this._ping == null)
+                        if (this.Ping1 == null)
                         {
-                            this.ProcessNode
-                                (
-                                    this._destination,
-                                    IPStatus.Unknown);
+                            var ipAddress = this.Destination ;
+                            if ( ipAddress != null )
+                            {
+                                this.ProcessNode
+                                    (
+                                        ipAddress,
+                                        IPStatus.Unknown);
+                            }
                         }
                         else
                         {
-                            var ipAddress = this._destination;
-                            if (ipAddress != null
-                                && Tracert.Buffer != null)
+                            var ipAddress = this.Destination;
+                            if (( ipAddress != null )
+                                && ( Tracert.Buffer != null ))
                             {
-                                this._ping.SendAsync
+                                this.Ping1.SendAsync
                                     (
                                         ipAddress,
                                         this._timeout,
@@ -266,13 +269,13 @@ namespace RuskomDiagnostics
         /// <param name="status"></param>
         private void ProcessNode
             (
-            IPAddress address,
+            [ Annotations.CanBeNull ] IPAddress address,
             IPStatus status)
         {
             long roundTripTime = 0;
 
-            if (status == IPStatus.TtlExpired
-                || status == IPStatus.Success)
+            if (( status == IPStatus.TtlExpired )
+                || ( status == IPStatus.Success ))
             {
                 var pingIntermediate = new Ping();
 
@@ -313,7 +316,7 @@ namespace RuskomDiagnostics
                     roundTripTime,
                     status);
 
-                var tracertNodes = this._nodesList;
+                var tracertNodes = this.NodesList;
                 if (tracertNodes != null)
                 {
                     lock (tracertNodes)
@@ -324,33 +327,30 @@ namespace RuskomDiagnostics
                     }
                 }
 
-                if (this.RouteNodeFound != null)
-                {
-                    this.RouteNodeFound
-                        (
-                            this,
-                            new RouteNodeFoundEventArgs(node));
-                }
+                this.RouteNodeFound?.Invoke
+                    (
+                        this,
+                        new RouteNodeFoundEventArgs(node));
             }
 
             if (address != null)
             {
                 this.IsDone = address.Equals
                     (
-                        this._destination);
+                        this.Destination);
             }
 
-            var nodesList = this._nodesList;
+            var nodesList = this.NodesList;
             if (nodesList != null)
             {
                 lock (nodesList)
                 {
                     if (!this.IsDone
-                        && nodesList.Count >= this._maxHops - 1)
+                        && ( nodesList.Count >= ( this._maxHops - 1 ) ))
                     {
                         this.ProcessNode
                             (
-                                this._destination,
+                                this.Destination,
                                 IPStatus.Success);
                     }
                 }
@@ -368,10 +368,10 @@ namespace RuskomDiagnostics
             {
                 lock (this)
                 {
-                    if (this._ping != null)
+                    if (this.Ping1 != null)
                     {
-                        this._ping.Dispose();
-                        this._ping = null;
+                        this.Ping1.Dispose();
+                        this.Ping1 = null;
                     }
                 }
             }

@@ -1250,10 +1250,10 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         {
             if ( form != null )
             {
-                var top = Screen.GetBounds ( form )
-                                .Height / 2 - form.Height / 2 ;
-                var left = Screen.GetBounds ( form )
-                                 .Width / 2 - form.Width / 2 ;
+                var top = ( Screen.GetBounds ( form )
+                                  .Height / 2 ) - ( form.Height / 2 ) ;
+                var left = ( Screen.GetBounds ( form )
+                                   .Width / 2 ) - ( form.Width / 2 ) ;
 
                 form.Top = top ;
                 form.Left = left ;
@@ -2178,8 +2178,8 @@ e-mail: support@rk1.ru
             bool inclusive = true )
         {
             return inclusive
-                       ? lower <= num && num <= upper
-                       : lower < num && num < upper ;
+                       ? ( lower <= num ) && ( num <= upper )
+                       : ( lower < num ) && ( num < upper ) ;
         }
 
         /// <summary>
@@ -2195,8 +2195,8 @@ e-mail: support@rk1.ru
             var networkAdaptersParameters = Handler.GetNetworkAdaptersParameters( ) ;
             {
                 var interfacesNumber = networkAdaptersParameters.Count ;
-                if (interfacesNumber > 0
-                    && speedTestsInput.MethodsInputs != null)
+                if (( interfacesNumber > 0 )
+                    && ( speedTestsInput.MethodsInputs != null ))
                 {
                     // ReSharper disable LoopCanBeConvertedToQuery
                     foreach (var methodsInput in speedTestsInput.MethodsInputs)
@@ -2808,9 +2808,9 @@ e-mail: support@rk1.ru
                                Status = Handler.BalanceTypeRequestFail
                            } ;
 
-            if ( Handler.SpeedTestServerAddress != null
-                 && Handler.SmallPingSettings != null
-                 && Handler.BigPingSettings != null )
+            if ( ( Handler.SpeedTestServerAddress != null )
+                 && ( Handler.SmallPingSettings != null )
+                 && ( Handler.BigPingSettings != null ) )
             {
                 var speedTestInput = new SpeedTestInput
                                      {
@@ -2827,9 +2827,9 @@ e-mail: support@rk1.ru
                      Handler.C_WordParameterIndex ,
                      Handler.MeasuresCount ) ;
 
-                if ( diagnosticResult.ConnectionState
-                     == DiagnosticResult.ClientConnectionState.Up
-                     && Handler.PostDiagnosticsResultFormat != null )
+                if ( ( diagnosticResult.ConnectionState
+                       == DiagnosticResult.ClientConnectionState.Up )
+                     && ( Handler.PostDiagnosticsResultFormat != null ) )
                 {
                     var diagnosticsReportString = string.Format
                         (

@@ -71,8 +71,8 @@ namespace RuskomDiagnostics
                 ) ;
 
             if (
-                Handler.ConnectionLoses != null
-                && Handler.ConnectionFineQuality != null
+                ( Handler.ConnectionLoses != null )
+                && ( Handler.ConnectionFineQuality != null )
                 )
             {
                 var testParameters = this.InitializeTestParameters
