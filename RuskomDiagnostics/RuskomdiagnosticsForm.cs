@@ -5,17 +5,19 @@ using RuskomDiagnostics.Properties;
 
 namespace RuskomDiagnostics
 {
-    /// <summary>
     // ReSharper disable WordIsNotInDictionary
+    /// <summary>
     /// Форма диагностики связи с сайтом Рускома
-    // ReSharper restore WordIsNotInDictionary
     /// </summary>
+    /// // ReSharper restore WordIsNotInDictionary
     public sealed partial class RuskomDiagnosticsForm : Form
     {
         /// <summary>
         /// </summary>
         // ReSharper disable IdentifierWordIsNotInDictionary
+        // ReSharper disable IdentifierWordIsNotInDictionary
         private const int C_CpNoCloseButton = 0x200 ;
+        // ReSharper restore IdentifierWordIsNotInDictionary
         // ReSharper restore IdentifierWordIsNotInDictionary
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace RuskomDiagnostics
         /// </summary>
         private const int C_ShowBalloonTipWithGreatMilliseconds = 5000 ;
 
-        // ReSharper disable StringLiteralsWordIsNotInDictionary
+         
         /// <summary>
         /// </summary>
         private const string C_DiagnosticsApplicationRunning =
@@ -52,7 +54,7 @@ namespace RuskomDiagnostics
         /// </summary>
         private const string C_DisableDiagnosticsAutorun =
             "Убрать Диагностику из Автозапуска ?" ;
-        // ReSharper restore StringLiteralsWordIsNotInDictionary
+         
 
         /// <summary>
         /// </summary>
@@ -206,42 +208,42 @@ namespace RuskomDiagnostics
         /// <summary>
         /// 
         /// </summary>
-        private long DayInMilliseconds { get ; set ; }
+        private long DayInMilliseconds { get ; }
 
         /// <summary>
         /// 
         /// </summary>
-        private string DisableDiagnosticsAutorun { get ; set ; }
+        private string DisableDiagnosticsAutorun { get ; }
 
         /// <summary>
         /// 
         /// </summary>
-        private string PostDiagnosticsResponceFormat { get ; set ; }
+        private string PostDiagnosticsResponceFormat { get ; }
 
         /// <summary>
         /// 
         /// </summary>
-        private string ApplicationFileExtension { get ; set ; }
+        private string ApplicationFileExtension { get ; }
 
         /// <summary>
         /// 
         /// </summary>
-        private string ApplicationFilename { get ; set ; }
+        private string ApplicationFilename { get ; }
 
         /// <summary>
         /// 
         /// </summary>
-        private string DiagnosticsApplicationRunning { get ; set ; }
+        private string DiagnosticsApplicationRunning { get ; }
 
         /// <summary>
         /// 
         /// </summary>
-        private int ShowBalloonTipWithShortMilliseconds { get ; set ; }
+        private int ShowBalloonTipWithShortMilliseconds { get ; }
 
         /// <summary>
         /// 
         /// </summary>
-        private string UserStartupRegistryPath { get ; set ; }
+        private string UserStartupRegistryPath { get ; }
 
         /// <summary>
         /// </summary>
@@ -253,16 +255,10 @@ namespace RuskomDiagnostics
             EventArgs e )
         {
             var communicationTimer = this.CommunicationTimer ;
-            if ( communicationTimer != null )
-            {
-                communicationTimer.Stop( ) ;
-            }
+            communicationTimer ? .Stop( ) ;
 
             var updateTimer = this.UpdateTimer;
-            if (updateTimer != null)
-            {
-                updateTimer.Stop();
-            }
+            updateTimer ? .Stop();
 
             this.WindowState = FormWindowState.Minimized ;
             this.ProcessWindowState( ) ;
@@ -362,7 +358,7 @@ namespace RuskomDiagnostics
         /// <summary>
         /// 
         /// </summary>
-        private int ShowBalloonTipWithGreatMilliseconds { get ; set ; }
+        private int ShowBalloonTipWithGreatMilliseconds { get ; }
 
         /// <summary>
         /// </summary>
@@ -443,7 +439,11 @@ namespace RuskomDiagnostics
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        // ReSharper disable IdentifierWordIsNotInDictionary
+        // ReSharper disable IdentifierWordIsNotInDictionary
         private void ВыходToolStripMenuItemClick ( object sender , EventArgs e )
+            // ReSharper restore IdentifierWordIsNotInDictionary
+            // ReSharper restore IdentifierWordIsNotInDictionary
         {
             this.CloseApplication( ) ;
         }
@@ -715,7 +715,11 @@ namespace RuskomDiagnostics
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        // ReSharper disable IdentifierWordIsNotInDictionary
+        // ReSharper disable IdentifierWordIsNotInDictionary
         private void проверитьМаршрутToolStripMenuItem1_Click
+            // ReSharper restore IdentifierWordIsNotInDictionary
+            // ReSharper restore IdentifierWordIsNotInDictionary
             ( object sender , EventArgs e )
         {
             this.ShowTraceToHostForm( ) ;
@@ -740,7 +744,11 @@ namespace RuskomDiagnostics
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        // ReSharper disable IdentifierWordIsNotInDictionary
+        // ReSharper disable IdentifierWordIsNotInDictionary
         private void балансToolStripMenuItem_Click
+            // ReSharper restore IdentifierWordIsNotInDictionary
+            // ReSharper restore IdentifierWordIsNotInDictionary
             ( object sender , EventArgs e )
         {
             this.ShowBalance( ) ;
@@ -761,7 +769,11 @@ namespace RuskomDiagnostics
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        // ReSharper disable IdentifierWordIsNotInDictionary
+        // ReSharper disable IdentifierWordIsNotInDictionary
         private void оплатитьToolStripMenuItem_Click
+            // ReSharper restore IdentifierWordIsNotInDictionary
+            // ReSharper restore IdentifierWordIsNotInDictionary
             ( object sender , EventArgs e )
         {
             this.OpenPayWebPage( ) ;

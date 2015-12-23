@@ -150,7 +150,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         /// <param name="pingSize"></param>
         public PingParameters
             (
-            string host ,
+            [ CanBeNull ] string host ,
             int pingTimeout ,
             int pingSize
             )
@@ -548,7 +548,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         /// <returns></returns>
         private static bool IsFileExistsInsidePaths
             (
-            string programsFile )
+            [ CanBeNull ] string programsFile )
         {
             var fileExists = ( programsFile == null ) ;
             if ( ! fileExists )
@@ -611,7 +611,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         [ NotNull ]
         public ProcessExecuteResult Execute
             (
-            string executeWithArguments = "" )
+            [ CanBeNull ] string executeWithArguments = "" )
         {
             var processExecuteResult = new ProcessExecuteResult( ) ;
             var executable = this.ExecutableFile ;
@@ -1291,6 +1291,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
                 + "rs={6}&bigrk1rs={7}&bigggrs={8}&biggwlost={9}&bigrk1lost={10}&biggglost={11}&lan"
                 + "iperfip={12}&laniperfspeed={13}&osv={14}&d_ip={15}&d_mac={16}&d_t={17}" ;
 
+            const string C_QuestionPerformRestart = "Обновление установлено, перезапустить приложение ?";
             const string C_AutorunEnablingError =
                 "Ошибка добавления в Автозагрузку" ;
             const string C_AutorunDisablingError =
@@ -1359,11 +1360,18 @@ e-mail: support@rk1.ru
             const int C_PostRequestTimeout = 999 ;
 
             // ReSharper disable PossibleNullReferenceException
-            Handler.PathEnvironmentVariableName =
-Settings.Default.InitializeWithString
+
+            Handler.QuestionPerformRestart =
+                Settings.Default.InitializeWithString
                     (
-                        Settings.Default.PathEnvironmentVariableName,
-                        C_PathEnvironmentVariableName);
+                        Settings.Default.QuestionPerformRestart,
+                        C_QuestionPerformRestart);
+
+            Handler.PathEnvironmentVariableName =
+                Settings.Default.InitializeWithString
+                    (
+                        Settings.Default.PathEnvironmentVariableName ,
+                        C_PathEnvironmentVariableName ) ;
             Handler.DefaultColumnName=
                 Settings.Default.InitializeWithString
                     (
@@ -1709,6 +1717,11 @@ Settings.Default.InitializeWithString
                 } ;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private static string QuestionPerformRestart { get ; set ; }
+
 
         /// <summary>
         /// 
@@ -1804,7 +1817,7 @@ Settings.Default.InitializeWithString
         [NotNull]
         public static string ExecuteProgramWithArguments
             (
-            ProcessExecuteParameters program,
+            [ CanBeNull ] ProcessExecuteParameters program,
             string hostName)
         {
             string tracertResultText = string.Empty;
@@ -1989,7 +2002,7 @@ Settings.Default.InitializeWithString
         [ NotNull ]
         private static SpeedTestResult GetSpeedTestResult
             (
-            SpeedTestInput speedTestProgramWithArgument )
+            [ CanBeNull ] SpeedTestInput speedTestProgramWithArgument )
         {
             int timeIndex ;
             int ipIndex ;
@@ -2462,7 +2475,7 @@ Settings.Default.InitializeWithString
         /// <returns></returns>
         private static bool GetClientNetworkInterfaceProperties
             (
-            NetworkInterface networkInterface ,
+            [ CanBeNull ] NetworkInterface networkInterface ,
             ref string connectionName ,
             ref string clientAddress ,
             ref string clientAddressMask ,
@@ -2521,8 +2534,14 @@ Settings.Default.InitializeWithString
                         clientMacAddress = networkInterface.GetPhysicalAddress()
                                                            .ToString();
                         clientDns = clientDnsAddress.ToString();
-                        adapterName = networkInterface.Description;
-                        connectionName = networkInterface.Name;
+                        if ( networkInterface . Description != null )
+                        {
+                            adapterName = networkInterface.Description;
+                        }
+                        if ( networkInterface . Name != null )
+                        {
+                            connectionName = networkInterface.Name;
+                        }
                         addressFound = true;
                     }
                 }
@@ -2561,8 +2580,11 @@ Settings.Default.InitializeWithString
                     {
                         continue;
                     }
-                    clientAddressMask =
-                        interfaceIpV4Address.AddressSubnetMask;
+                    if ( interfaceIpV4Address . AddressSubnetMask != null )
+                    {
+                        clientAddressMask =
+                            interfaceIpV4Address.AddressSubnetMask;
+                    }
                     break;
                 }
             }
@@ -2589,15 +2611,17 @@ Settings.Default.InitializeWithString
                 foreach (var address in unicastAddresses)
                     // ReSharper restore LoopCanBeConvertedToQuery
                 {
-                    if (address?.IPv4Mask != null)
+                    if ( ( address ? . IPv4Mask != null )
+                         && ( address . Address != null ) )
                     {
                         var interfaceAddress = new InterfaceIpV4Address
                             (
-                            address.Address,
-                            address.IPv4Mask.ToString());
-                        interfaceIpV4Addresses.Add
+                            address . Address ,
+                            address . IPv4Mask . ToString ( ) ) ;
+                        interfaceIpV4Addresses . Add
                             (
-                             interfaceAddress);
+                                interfaceAddress ) ;
+
                     }
                 }
             }
@@ -2776,6 +2800,7 @@ Settings.Default.InitializeWithString
         /// 
         /// </summary>
         /// <returns></returns>
+        [ CanBeNull ]
         public static BalanceTypeResponse PerformDiagnostic ( )
         {
             var response = new BalanceTypeResponse
@@ -2834,7 +2859,7 @@ Settings.Default.InitializeWithString
                 }
             }
 
-            return response ?? new BalanceTypeResponse( ) ;
+            return response ;
         }
 
         /// <summary>
@@ -3133,7 +3158,7 @@ Settings.Default.InitializeWithString
 
                 var userRestartDecision = MessageBox.Show
                     (
-                        Settings.Default.QuestionPerformRestart,
+                        Handler.QuestionPerformRestart ,
                         applicationName,
                         Handler.C_MessageBoxButtons,
                         Handler.C_MessageBoxIcon);
@@ -3181,29 +3206,31 @@ Settings.Default.InitializeWithString
             string updateDestination,
             string updateSource)
         {
-            var destinationValid = Handler.CheckDestination
+            var isDestinationValid = Handler.CheckDestination
                 (
                     updateDestination);
 
             var downloadSuccess = false;
 
-            if (destinationValid)
+            if ( isDestinationValid
+                 && ( Handler.AnonymousFtpUserName != null )
+                 && ( Handler.AnonymousPassword != null ) )
             {
                 try
                 {
                     downloadSuccess = Handler.DownloadFtpFile
                         (
-                            updateSource,
-                            updateDestination,
-                            Handler.AnonymousFtpUserName,
-                            Handler.AnonymousPassword);
+                            updateSource ,
+                            updateDestination ,
+                            Handler.AnonymousFtpUserName ,
+                            Handler.AnonymousPassword ) ;
                 }
 
-                catch (Exception)
+                catch ( Exception )
                 {
                     MessageBox.Show
                         (
-                            Handler.DownloadFail);
+                            Handler.DownloadFail ) ;
                 }
             }
             return downloadSuccess;
@@ -3218,7 +3245,7 @@ Settings.Default.InitializeWithString
         /// <returns></returns>
         private static bool DownloadFtpFile
             (
-            string source,
+            [ CanBeNull ] string source,
             string destination,
             string userName,
             string password)
@@ -3283,7 +3310,7 @@ Settings.Default.InitializeWithString
         /// <returns></returns>
         private static bool CheckDestination
             (
-            string updateDestination)
+            [ CanBeNull ] string updateDestination)
         {
             var destinationValid = false ;
             if (updateDestination != null)
@@ -3364,11 +3391,12 @@ Settings.Default.InitializeWithString
         /// <param name="userName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
+        [ CanBeNull ]
         private static string GetFtpFileContent(
-            string location,
-            string filename,
-            string userName,
-            string password)
+            [ CanBeNull ] string location,
+            [ CanBeNull ] string filename,
+            [ CanBeNull ] string userName,
+            [ CanBeNull ] string password)
         {
             
             string updateVersionString = null;
@@ -3467,7 +3495,7 @@ Settings.Default.InitializeWithString
         /// </summary>
         public static void ShowBalance
             (
-            NotifyIcon notifyIcon ,
+            [ CanBeNull ] NotifyIcon notifyIcon ,
             Form ownerForm ,
             string applicationName )
         {
@@ -3531,6 +3559,7 @@ Settings.Default.InitializeWithString
         /// 
         /// </summary>
         /// <returns></returns>
+        [ CanBeNull ]
         public static string GetBalance ( )
         {
             var balanceString = string.Empty ;
@@ -3561,6 +3590,7 @@ Settings.Default.InitializeWithString
         /// </summary>
         /// <param name="requestString"></param>
         /// <returns></returns>
+        [ CanBeNull ]
         private static BalanceTypeResponse SendRequestWithBalanceTypeResponce
             (
             [ NotNull ] string requestString )
