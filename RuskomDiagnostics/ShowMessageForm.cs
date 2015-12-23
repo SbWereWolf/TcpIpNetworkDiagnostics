@@ -11,16 +11,16 @@ namespace RuskomDiagnostics
         /// <summary>
         /// 
         /// </summary>
-        public string FormTitle ;
+        public string FormTitle { private get ; set ; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string FormMessage ;
+        public string FormMessage { private get ; set ; }
 
         /// <summary>
         /// </summary>
-        private bool _resultShown ;
+        private bool MessageShown { get ; set ; }
 
         /// <summary>
         /// 
@@ -47,13 +47,10 @@ namespace RuskomDiagnostics
         private void CopyResult ( )
         {
             var formMessageTextBox = this.FormMessageTextBox ;
-            if ( formMessageTextBox != null )
+            var overallString = formMessageTextBox?.Text ;
+            if ( overallString != null )
             {
-                var overallString = formMessageTextBox.Text ;
-                if ( overallString != null )
-                {
-                    Clipboard.SetText ( overallString ) ;
-                }
+                Clipboard.SetText ( overallString ) ;
             }
         }
 
@@ -78,7 +75,7 @@ namespace RuskomDiagnostics
             object sender ,
             EventArgs e )
         {
-            this._resultShown = false ;
+            this.MessageShown = false ;
             Handler.SetFormPositionsOnScreenCenter ( this ) ;
         }
 
@@ -91,11 +88,11 @@ namespace RuskomDiagnostics
             object sender ,
             EventArgs e )
         {
-            if ( this._resultShown )
+            if ( this.MessageShown )
             {
                 return ;
             }
-            this._resultShown = true ;
+            this.MessageShown = true ;
             this.Text = this.FormTitle ;
             var formMessageTextBox = this.FormMessageTextBox ;
             if ( formMessageTextBox != null )
