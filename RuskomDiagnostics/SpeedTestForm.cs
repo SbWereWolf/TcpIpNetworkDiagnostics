@@ -284,20 +284,11 @@ namespace RuskomDiagnostics
                                 break ;
                         }
 
-                        var testResultAsString = string.Format
-                            (
-                                "{0}{1}"
-                                , statusCaption
-                                , testResult.ToColumn( )
-                            ) ;
+                        var testResultAsString =
+                            $"{statusCaption}{testResult.ToColumn( )}" ;
 
-                        testsResult = string.Format
-                            (
-                                "{0}{1}{2}"
-                                , testsResult
-                                , testResultAsString
-                                , Environment.NewLine
-                            ) ;
+                        testsResult =
+                            $"{testsResult}{testResultAsString}{Environment.NewLine}" ;
                     }
                 }
 

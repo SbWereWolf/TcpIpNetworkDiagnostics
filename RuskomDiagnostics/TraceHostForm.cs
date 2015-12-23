@@ -202,7 +202,7 @@ namespace RuskomDiagnostics
                         (
                          ( item.Index + 1 ).ToString
                              ( CultureInfo.InvariantCulture ) ) ;
-                    item.SubItems.Add ( Handler.TraceComplite ) ;
+                    item.SubItems.Add ( Handler.TraceComplete ) ;
                 }
             }
 
@@ -409,12 +409,7 @@ namespace RuskomDiagnostics
                         rowsCounter,
                         columnsCounter);
 
-                var text = string.Format
-                    (
-                        " {0} : '{1}' ;",
-                        columnName,
-                        cellText
-                    );
+                var text = $" {columnName} : '{cellText}' ;" ;
                 listViewContentBuilder.Append
                     (
                         text);

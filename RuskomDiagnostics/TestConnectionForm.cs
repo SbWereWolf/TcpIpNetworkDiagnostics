@@ -379,15 +379,8 @@ namespace RuskomDiagnostics
                                 programOutput +=
                                     (
                                         substringExists > 0
-                                            ? string.Format
-                                                  (
-                                                      "{0}{1}" ,
-                                                      Handler.ConnectionFineQuality,
-                                                      Environment.NewLine )
-                                            : string.Format
-                                                  (
-                                                      "{0}{1}", Handler.ConnectionLoses,
-                                                      Environment.NewLine ) ) ;
+                                            ? $"{Handler.ConnectionFineQuality}{Environment.NewLine}"
+                                            : $"{Handler.ConnectionLoses}{Environment.NewLine}" ) ;
                             }
                         }
                     }
@@ -524,12 +517,7 @@ namespace RuskomDiagnostics
                      string.Empty ,
                      ( current ,
                        outputsControl ) =>
-                     string.Format
-                         (
-                          "{0}{1}{2}" ,
-                          current ,
-                          Environment.NewLine ,
-                          outputsControl.Text )
+                     $"{current}{Environment.NewLine}{outputsControl.Text}"
                     ) ;
                 if ( outputText != null )
                 {

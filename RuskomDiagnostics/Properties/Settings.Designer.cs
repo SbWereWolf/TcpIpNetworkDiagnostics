@@ -1030,10 +1030,10 @@ namespace RuskomDiagnostics.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute("Построение маршрута завершенно")]
         public string TraceComplite {
             get {
-                return ((string)(this["TraceComplite"]));
+                return ((string)(this["TraceComplete"]));
             }
             set {
-                this["TraceComplite"] = value;
+                this["TraceComplete"] = value;
             }
         }
         

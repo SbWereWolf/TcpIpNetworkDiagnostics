@@ -339,13 +339,7 @@ namespace RuskomDiagnostics
                             string.Empty,
                             (current,
                              outputsControl) =>
-                            string.Format
-                                (
-                                    "{0}{1}{2}",
-                                    current,
-                                    outputsControl.Text,
-                                    Environment.NewLine
-                                ));
+                            $"{current}{outputsControl.Text}{Environment.NewLine}" );
                 if (outputText != null)
                 {
                     Clipboard.SetText

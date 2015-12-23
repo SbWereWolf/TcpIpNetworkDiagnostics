@@ -236,7 +236,7 @@
     <Setting Name="BalanceRequest" Type="System.String" Scope="User">
       <Value Profile="(Default)">type=balance</Value>
     </Setting>
-    <Setting Name="TraceCompliteMessage" Type="System.String" Scope="User">
+    <Setting Name="TraceCompleteMessage" Type="System.String" Scope="User">
       <Value Profile="(Default)">Построение маршрута завершенно</Value>
     </Setting>
     <Setting Name="DayInMilliseconds" Type="System.Int32" Scope="User">
@@ -251,7 +251,7 @@
     <Setting Name="NetshProgramArguments" Type="System.String" Scope="User">
       <Value Profile="(Default)">interface ipv4 show config</Value>
     </Setting>
-    <Setting Name="TraceComplite" Type="System.String" Scope="User">
+    <Setting Name="TraceComplete" Type="System.String" Scope="User">
       <Value Profile="(Default)">Построение маршрута завершенно</Value>
     </Setting>
     <Setting Name="CmdCodePage" Type="System.Int32" Scope="User">

@@ -212,15 +212,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
                 reply = null ;
             }
 
-            var pingSuccess = false ;
-
-            if ( reply != null )
-            {
-                if ( reply.Status == IPStatus.Success )
-                {
-                    pingSuccess = true ;
-                }
-            }
+            var pingSuccess = reply?.Status == IPStatus.Success ;
 
             var millisecondsSpend =
                 pingSuccess
@@ -646,11 +638,8 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
 
             if ( isParametersValid )
             {
-                var arguments = string.Format
-                    (
-                     "{0} {1}" ,
-                     this._programArguments ,
-                     executeWithArguments ) ;
+                var arguments =
+                    $"{this._programArguments} {executeWithArguments}" ;
                 var programsProcess =
                     new Process
                     {
@@ -794,14 +783,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         /// 
         /// </summary>
         public string TestIp ;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        // ReSharper disable NotAccessedField.Global
-        public string TestingPeriodSeconds ;
-
-        // ReSharper restore NotAccessedField.Global
+        
         /// <summary>
         /// 
         /// </summary>
@@ -923,7 +905,6 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         {
             this.TimeMark = string.Empty ;
             this.TestIp = string.Empty ;
-            this.TestingPeriodSeconds = string.Empty ;
             this.DataSentVolumeBits = string.Empty ;
             this.NetworkSpeedBitsPerSecond = string.Empty ;
             this.TestStatus = TaskStatus.ActionStatus.Unknown ;
@@ -1284,7 +1265,9 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         /// </summary>
         public static string TestingNetworkSpeed { get; private set; }
 
+        // ReSharper disable FunctionComplexityOverflow
         static Handler ( )
+            // ReSharper restore FunctionComplexityOverflow
         {
             // ReSharper disable StringLiteralsWordIsNotInDictionary
             const int C_CmdCodePage = 866;
@@ -1307,10 +1290,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
                 "type=lan_diag&gwrs={0}&rk1rs={1}&ggrs={2}&gwlost={3}&rk1lost={4}&gglost={5}&biggw"
                 + "rs={6}&bigrk1rs={7}&bigggrs={8}&biggwlost={9}&bigrk1lost={10}&biggglost={11}&lan"
                 + "iperfip={12}&laniperfspeed={13}&osv={14}&d_ip={15}&d_mac={16}&d_t={17}" ;
-            const string C_LetAutorunThisVersionQuestion =
-                "Настроена автозапуска другой версии , автоматически запускать эту версию? " ;
-            const string C_LetAutorunApplicationQuestion =
-                "Запускать приложение автоматически при загрузке ? " ;
+
             const string C_AutorunEnablingError =
                 "Ошибка добавления в Автозагрузку" ;
             const string C_AutorunDisablingError =
@@ -1390,17 +1370,17 @@ Settings.Default.InitializeWithString
                         Settings.Default.DefaultColumnName,
                         C_DefaultColumnName);
                 Handler.EmptyColumnValue =
-            Handler.TraceComplite =
+            Handler.TraceComplete =
                 Settings.Default.InitializeWithString
                     (
                         Settings.Default.EmptyColumnValue,
                         C_EmptyColumnValue);
-            Handler.TraceComplite =
+            Handler.TraceComplete =
                 Settings.Default.InitializeWithString
                     (
                         Settings.Default.TraceComplite,
                         C_TraceComplite);
-            //TraceComplite
+            //TraceComplete
             Handler.NetshExecutable =
                 Settings.Default.InitializeWithString
                     (
@@ -1476,17 +1456,7 @@ Settings.Default.InitializeWithString
                         (
                             Settings.Default.PostDiagnosticsResultFormat,
                             C_PostDiagnosticsResultFormat);
-                Handler.LetAutorunThisVersionQuestion =
-                    Settings.Default.InitializeWithString
-                        (
-                            Settings.Default.LetAutorunThisVersionQuestion,
-                            C_LetAutorunThisVersionQuestion);
 
-                Handler.LetAutorunApplicationQuestion =
-                    Settings.Default.InitializeWithString
-                        (
-                            Settings.Default.LetAutorunApplicationQuestion,
-                            C_LetAutorunApplicationQuestion);
                 Handler.AutorunEnablingError =
                     Settings.Default.InitializeWithString
                         (
@@ -1512,12 +1482,12 @@ Settings.Default.InitializeWithString
                         (
                             Settings.Default.UpdateVersionFilename,
                             C_UpdateVersionFilename);
-                Handler.AnonimusFtpUserName =
+                Handler.AnonymousFtpUserName =
                     Settings.Default.InitializeWithString
                         (
                             Settings.Default.AnonimusFtpUserName,
                             C_AnonimusFtpUserName);
-                Handler.AnonimusPassword =
+                Handler.AnonymousPassword =
                     Settings.Default.InitializeWithString
                         (
                             Settings.Default.AnonimusPassword,
@@ -1773,7 +1743,7 @@ Settings.Default.InitializeWithString
         /// <summary>
         /// 
         /// </summary>
-        public static string TraceComplite { get ; private set ; }
+        public static string TraceComplete { get ; private set ; }
 
         /// <summary>
         /// 
@@ -1841,14 +1811,8 @@ Settings.Default.InitializeWithString
             if (program != null)
             {
                 var textResult = program.Execute(hostName);
-                tracertResultText = string.Format
-                    (
-                        "{0}{1}",
-                        textResult.ExecuteStatus == TaskStatus.ActionStatus.Ok
-                            ? textResult.ReadToEndsResult
-                            : TaskStatus.GetStatusDescription
-                                  (textResult.ExecuteStatus),
-                        Environment.NewLine);
+                tracertResultText =
+                    $"{( textResult.ExecuteStatus == TaskStatus.ActionStatus.Ok ? textResult.ReadToEndsResult : TaskStatus.GetStatusDescription ( textResult.ExecuteStatus ) )}{Environment.NewLine}" ;
             }
             return tracertResultText;
         }
@@ -1976,12 +1940,12 @@ Settings.Default.InitializeWithString
         /// <summary>
         /// 
         /// </summary>
-        private static string AnonimusPassword { get ; set ; }
+        private static string AnonymousPassword { get ; set ; }
 
         /// <summary>
         /// 
         /// </summary>
-        private static string AnonimusFtpUserName { get ; set ; }
+        private static string AnonymousFtpUserName { get ; set ; }
 
         /// <summary>
         /// 
@@ -1997,20 +1961,6 @@ Settings.Default.InitializeWithString
         /// 
         /// </summary>
         private static string AutorunEnablingError { get ; set ; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        // ReSharper disable UnusedAutoPropertyAccessor.Local
-        private static string LetAutorunApplicationQuestion { get ; set ; }
-        // ReSharper restore UnusedAutoPropertyAccessor.Local
-
-        /// <summary>
-        /// 
-        /// </summary>
-        // ReSharper disable UnusedAutoPropertyAccessor.Local
-        private static string LetAutorunThisVersionQuestion { get ; set ; }
-        // ReSharper restore UnusedAutoPropertyAccessor.Local
 
         /// <summary>
         /// 
@@ -2043,7 +1993,6 @@ Settings.Default.InitializeWithString
         {
             int timeIndex ;
             int ipIndex ;
-            int periodIndex ;
             int volumeIndex ;
             int speedIndex ;
             string newLinesSymptom ;
@@ -2053,7 +2002,6 @@ Settings.Default.InitializeWithString
             {
                 timeIndex = 0 ;
                 ipIndex = 1 ;
-                periodIndex = 6 ;
                 volumeIndex = 7 ;
                 speedIndex = 8 ;
                 newLinesSymptom = "\n" ;
@@ -2067,7 +2015,6 @@ Settings.Default.InitializeWithString
                     C_ElseAbove ) ;
                 timeIndex = index ;
                 ipIndex = Settings.Default.SpeedTestIpComponentIndex ;
-                periodIndex = Settings.Default.TestingPeriodComponentIndex ;
                 volumeIndex = Settings.Default.DataSentVolumeComponentIndex ;
                 speedIndex = Settings.Default.NetworkSpeedComponentIndex ;
                 newLinesSymptom =
@@ -2083,99 +2030,89 @@ Settings.Default.InitializeWithString
             var textLines = string.Empty ;
             var resultComponents = new string[0] ;
 
-            if ( speedTestProgramWithArgument != null )
+            if ( speedTestProgramWithArgument?.Program != null )
             {
-                if ( speedTestProgramWithArgument.Program != null )
+                var executeResult =
+                    speedTestProgramWithArgument
+                        .Program
+                        .Execute
+                        (
+                         speedTestProgramWithArgument.HostName ) ;
+                if (executeResult.ExecuteStatus
+                    == TaskStatus.ActionStatus.Ok)
                 {
-                    var executeResult =
-                        speedTestProgramWithArgument
-                            .Program
-                            .Execute
-                            (
-                             speedTestProgramWithArgument.HostName ) ;
-                    if (executeResult.ExecuteStatus
-                        == TaskStatus.ActionStatus.Ok)
+                    textLines = executeResult.ReadToEndsResult;
+                }
+
+                if ( ! string.IsNullOrEmpty
+                           (
+                            textLines ) )
+                {
                     {
-                        textLines = executeResult.ReadToEndsResult;
-                    }
-
-                    if ( ! string.IsNullOrEmpty
-                               (
-                                textLines ) )
-                    {
-                        {
-                            var fileContentWithoutEol =
-                                textLines.Replace
-                                    (
-                                        Environment.NewLine ,
-                                        " " )
-                                         .Replace
-                                    (
-                                        newLinesSymptom ,
-                                        " " ) ;
-
-                            var delimiters = new[]
-                                             {
-                                                 componentsDelimiter
-                                             } ;
-
-                            resultComponents = fileContentWithoutEol.Split
+                        var fileContentWithoutEol =
+                            textLines.Replace
                                 (
-                                    delimiters ,
-                                    StringSplitOptions.None ) ;
-                        }
-                    }
+                                 Environment.NewLine ,
+                                 " " )
+                                     .Replace
+                                (
+                                 newLinesSymptom ,
+                                 " " ) ;
 
-                    if ( resultComponents.Length > 0 )
-                    {
-                        var lowerBound = resultComponents.GetLowerBound
+                        var delimiters = new[]
+                                         {
+                                             componentsDelimiter
+                                         } ;
+
+                        resultComponents = fileContentWithoutEol.Split
                             (
-                             Handler.C_FirstIndex ) ;
-                        var upperBound = resultComponents.GetUpperBound
-                            (
-                             Handler.C_FirstIndex ) ;
-
-                        var time = timeIndex.Between
-                                       (
-                                        lowerBound ,
-                                        upperBound )
-                                       ? resultComponents[ timeIndex ]
-                                       : C_Empty ;
-                        var speedTestIp = ipIndex.Between
-                                              (
-                                               lowerBound ,
-                                               upperBound )
-                                              ? resultComponents[ ipIndex ]
-                                              : C_Empty ;
-                        var testingPeriod = periodIndex.Between
-                                                (
-                                                 lowerBound ,
-                                                 upperBound )
-                                                ? resultComponents[ periodIndex
-                                                      ]
-                                                : C_Empty ;
-                        var dataSentVolume = volumeIndex.Between
-                                                 (
-                                                  lowerBound ,
-                                                  upperBound )
-                                                 ? resultComponents[ volumeIndex
-                                                       ]
-                                                 : C_Empty ;
-                        var networkSpeed = speedIndex.Between
-                                               (
-                                                lowerBound ,
-                                                upperBound )
-                                               ? resultComponents[ speedIndex ]
-                                               : C_Empty ;
-
-                        speedTestResult.TestStatus = executeResult.ExecuteStatus ;
-                        speedTestResult.TimeMark = time ;
-                        speedTestResult.TestIp = speedTestIp ;
-                        speedTestResult.TestingPeriodSeconds = testingPeriod ;
-                        speedTestResult.DataSentVolumeBits = dataSentVolume ;
-                        speedTestResult.NetworkSpeedBitsPerSecond = networkSpeed ;
-                        speedTestResult.CalculateIndicators( ) ;
+                             delimiters ,
+                             StringSplitOptions.None ) ;
                     }
+                }
+
+                if ( resultComponents.Length > 0 )
+                {
+                    var lowerBound = resultComponents.GetLowerBound
+                        (
+                         Handler.C_FirstIndex ) ;
+                    var upperBound = resultComponents.GetUpperBound
+                        (
+                         Handler.C_FirstIndex ) ;
+
+                    var time = timeIndex.Between
+                                   (
+                                    lowerBound ,
+                                    upperBound )
+                                   ? resultComponents[ timeIndex ]
+                                   : C_Empty ;
+                    var speedTestIp = ipIndex.Between
+                                          (
+                                           lowerBound ,
+                                           upperBound )
+                                          ? resultComponents[ ipIndex ]
+                                          : C_Empty ;
+
+                    var dataSentVolume = volumeIndex.Between
+                                             (
+                                              lowerBound ,
+                                              upperBound )
+                                             ? resultComponents[ volumeIndex
+                                                   ]
+                                             : C_Empty ;
+                    var networkSpeed = speedIndex.Between
+                                           (
+                                            lowerBound ,
+                                            upperBound )
+                                           ? resultComponents[ speedIndex ]
+                                           : C_Empty ;
+
+                    speedTestResult.TestStatus = executeResult.ExecuteStatus ;
+                    speedTestResult.TimeMark = time ;
+                    speedTestResult.TestIp = speedTestIp ;
+                    speedTestResult.DataSentVolumeBits = dataSentVolume ;
+                    speedTestResult.NetworkSpeedBitsPerSecond = networkSpeed ;
+                    speedTestResult.CalculateIndicators( ) ;
                 }
             }
             return speedTestResult ;
@@ -2470,11 +2407,7 @@ Settings.Default.InitializeWithString
 
             foreach ( var networkInterface in networkInterfaces )
             {
-                if ( networkInterface == null )
-                {
-                    continue ;
-                }
-                if ( networkInterface.OperationalStatus != OperationalStatus.Up )
+                if ( networkInterface?.OperationalStatus != OperationalStatus.Up )
                 {
                     continue ;
                 }
@@ -2610,33 +2543,27 @@ Settings.Default.InitializeWithString
         {
             IPAddress clientIpAddress = null;
             clientAddressMask = string.Empty;
-            if (interfaceIpV4Addresses != null)
+            var ipV4InterfacesCount = interfaceIpV4Addresses?.Count;
+            if (ipV4InterfacesCount > 0)
             {
-                var ipV4InterfacesCount = interfaceIpV4Addresses.Count;
-                if (ipV4InterfacesCount > 0)
+                foreach (
+                    var interfaceIpV4Address in interfaceIpV4Addresses)
                 {
-                    foreach (
-                        var interfaceIpV4Address in interfaceIpV4Addresses)
+                    var interfaceAddress =
+                        interfaceIpV4Address?.InterfaceIpAddress;
+                    if (interfaceAddress != null)
                     {
-                        if (interfaceIpV4Address != null)
-                        {
-                            var interfaceAddress =
-                                interfaceIpV4Address.InterfaceIpAddress;
-                            if (interfaceAddress != null)
-                            {
-                                clientIpAddress = Handler.GetOperativeIpAddress
-                                    (
-                                        interfaceAddress);
-                            }
-                        }
-                        if (clientIpAddress == null)
-                        {
-                            continue;
-                        }
-                        clientAddressMask =
-                            interfaceIpV4Address.AddressSubnetMask;
-                        break;
+                        clientIpAddress = Handler.GetOperativeIpAddress
+                            (
+                             interfaceAddress);
                     }
+                    if (clientIpAddress == null)
+                    {
+                        continue;
+                    }
+                    clientAddressMask =
+                        interfaceIpV4Address.AddressSubnetMask;
+                    break;
                 }
             }
             return clientIpAddress;
@@ -2653,36 +2580,26 @@ Settings.Default.InitializeWithString
         {
             var interfaceIpV4Addresses =
                 new List<InterfaceIpV4Address>();
-            if (ipProperties != null)
-            {
-                var unicastAddresses = ipProperties.UnicastAddresses;
+            var unicastAddresses = ipProperties?.UnicastAddresses;
 
-                if (unicastAddresses != null)
+            var unicastCount = unicastAddresses?.Count;
+            if (unicastCount > 0)
+            {
+                // ReSharper disable LoopCanBeConvertedToQuery
+                foreach (var address in unicastAddresses)
+                    // ReSharper restore LoopCanBeConvertedToQuery
                 {
-                    var unicastCount = unicastAddresses.Count;
-                    if (unicastCount > 0)
+                    if (address?.IPv4Mask != null)
                     {
-                        // ReSharper disable LoopCanBeConvertedToQuery
-                        foreach (var address in unicastAddresses)
-                            // ReSharper restore LoopCanBeConvertedToQuery
-                        {
-                            if (address != null)
-                            {
-                                if (address.IPv4Mask != null)
-                                {
-                                    var interfaceAddress = new InterfaceIpV4Address
-                                        (
-                                        address.Address,
-                                        address.IPv4Mask.ToString());
-                                    interfaceIpV4Addresses.Add
-                                        (
-                                            interfaceAddress);
-                                }
-                            }
-                        }
+                        var interfaceAddress = new InterfaceIpV4Address
+                            (
+                            address.Address,
+                            address.IPv4Mask.ToString());
+                        interfaceIpV4Addresses.Add
+                            (
+                             interfaceAddress);
                     }
                 }
-                
             }
             return interfaceIpV4Addresses;
         }
@@ -2699,22 +2616,19 @@ Settings.Default.InitializeWithString
         {
             var unicastAddressesCollection = ipProperties.UnicastAddresses ;
             var unicastAddresses = new List < IPAddress >( ) ;
-            if ( unicastAddressesCollection != null )
+            var unicastCount = unicastAddressesCollection?.Count ;
+            if ( unicastCount > 0 )
             {
-                var unicastCount = unicastAddressesCollection.Count ;
-                if ( unicastCount > 0 )
+                // ReSharper disable LoopCanBeConvertedToQuery
+                foreach ( var address in unicastAddressesCollection )
+                    // ReSharper restore LoopCanBeConvertedToQuery
                 {
-                    // ReSharper disable LoopCanBeConvertedToQuery
-                    foreach ( var address in unicastAddressesCollection )
-                        // ReSharper restore LoopCanBeConvertedToQuery
+                    if ( address != null )
                     {
-                        if ( address != null )
-                        {
-                            var ipAddress = address.Address ;
-                            unicastAddresses.Add
-                                (
-                                 ipAddress ) ;
-                        }
+                        var ipAddress = address.Address ;
+                        unicastAddresses.Add
+                            (
+                             ipAddress ) ;
                     }
                 }
             }
@@ -2762,20 +2676,17 @@ Settings.Default.InitializeWithString
             var dnsAddresses = new List < IPAddress >( ) ;
             var dnsAddressesCollection = ipProperties.DnsAddresses ;
 
-            if ( dnsAddressesCollection != null )
+            var dnsCount = dnsAddressesCollection?.Count ;
+            if ( dnsCount > 0 )
             {
-                var dnsCount = dnsAddressesCollection.Count ;
-                if ( dnsCount > 0 )
+                // ReSharper disable LoopCanBeConvertedToQuery
+                foreach ( var addresses in dnsAddressesCollection )
+                    // ReSharper restore LoopCanBeConvertedToQuery
                 {
-                    // ReSharper disable LoopCanBeConvertedToQuery
-                    foreach ( var addresses in dnsAddressesCollection )
-                        // ReSharper restore LoopCanBeConvertedToQuery
-                    {
-                        var ipAddress = addresses ;
-                        dnsAddresses.Add
-                            (
-                             ipAddress ) ;
-                    }
+                    var ipAddress = addresses ;
+                    dnsAddresses.Add
+                        (
+                         ipAddress ) ;
                 }
             }
             return dnsAddresses ;
@@ -3050,24 +2961,6 @@ Settings.Default.InitializeWithString
         }
 
         /// <summary>
-        /// </summary>
-        /// <param name="registryKey"></param>
-        /// <param name="keyName"></param>
-        /// <returns></returns>
-        // ReSharper disable UnusedMember.Local
-        private static bool IsRegistryKeyExists
-            // ReSharper restore UnusedMember.Local
-            (
-            [ NotNull ] RegistryKey registryKey ,
-            string keyName )
-        {
-            var result = registryKey.GetValue
-                             (
-                              keyName ) != null ;
-            return result ;
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="setOrDisableAutorun"></param>
@@ -3134,7 +3027,11 @@ Settings.Default.InitializeWithString
         /// <param name="applicationVersion"></param>
         /// <param name="registryKeyName"></param>
         /// <param name="updateStorageLocation"></param>
+        // ReSharper disable FunctionComplexityOverflow
+        // ReSharper disable FunctionComplexityOverflow
         public static bool CheckUpdate
+            // ReSharper restore FunctionComplexityOverflow
+            // ReSharper restore FunctionComplexityOverflow
             (
             string applicationName,
             string applicationStartupPath,
@@ -3164,8 +3061,8 @@ Settings.Default.InitializeWithString
                     (
                         Handler.UpdateStorageLocation,
                         Handler.UpdateVersionFilename,
-                        Handler.AnonimusFtpUserName,
-                        Handler.AnonimusPassword
+                        Handler.AnonymousFtpUserName,
+                        Handler.AnonymousPassword
                     );
             }
 
@@ -3205,29 +3102,16 @@ Settings.Default.InitializeWithString
                 }
             }
 
-            var updateDestination = string.Format
-                (
-                    "{0}{1}{2}{3}{4}",
-                    applicationStartupPath,
-                    Path.DirectorySeparatorChar,
-                    applicationFilename,
-                    updateVersion,
-                    applicationFileExtension);
+            var updateDestination =
+                $"{applicationStartupPath}{Path.DirectorySeparatorChar}{applicationFilename}{updateVersion}{applicationFileExtension}" ;
 
             var downloadSuccess = false;
             if (letDownloadUpdate)
             {
 
-                var updateFilename = string.Format
-                    (
-                        "{0}{1}",
-                        applicationFilename,
-                        applicationFileExtension);
-                var updateSource = string.Format
-                    (
-                        "{0}{1}",
-                        updateStorageLocation,
-                        updateFilename);
+                var updateFilename =
+                    $"{applicationFilename}{applicationFileExtension}" ;
+                var updateSource = $"{updateStorageLocation}{updateFilename}" ;
 
                 downloadSuccess = Handler.DownloadUpdate
                     (
@@ -3311,8 +3195,8 @@ Settings.Default.InitializeWithString
                         (
                             updateSource,
                             updateDestination,
-                            Handler.AnonimusFtpUserName,
-                            Handler.AnonimusPassword);
+                            Handler.AnonymousFtpUserName,
+                            Handler.AnonymousPassword);
                 }
 
                 catch (Exception)
@@ -3490,11 +3374,7 @@ Settings.Default.InitializeWithString
             string updateVersionString = null;
             try
             {
-                var updateVersionSource = string.Format
-                    (
-                        "{0}{1}",
-                        location,
-                        filename);
+                var updateVersionSource = $"{location}{filename}" ;
                 var request = (FtpWebRequest) WebRequest.Create
                                                   (
                                                       updateVersionSource);
@@ -3561,15 +3441,10 @@ Settings.Default.InitializeWithString
         /// <param name="showTime"></param>
         /// <param name="title"></param>
         // ReSharper disable UnusedMethodReturnValue.Global
-        public static bool SetBalanceMessage
+        public static void SetBalanceMessage
             // ReSharper restore UnusedMethodReturnValue.Global
-            (
-            [ NotNull ] NotifyIcon hostMenuNotifyIcon ,
-            [ NotNull ] string balanceString ,
-            int showTime ,
-            string title )
+            ( [ NotNull ] NotifyIcon hostMenuNotifyIcon , [ NotNull ] string balanceString , int showTime , string title )
         {
-            var wasSet = false ;
             var currentBalance = hostMenuNotifyIcon.Text ;
             if ( ! string.Equals
                        (
@@ -3584,9 +3459,7 @@ Settings.Default.InitializeWithString
                      title ,
                      balanceString ,
                      ToolTipIcon.Info ) ;
-                wasSet = true ;
             }
-            return wasSet ;
         }
 
         /// <summary>
@@ -3724,24 +3597,21 @@ Settings.Default.InitializeWithString
 
                 var response = request.GetResponse() as HttpWebResponse;
 
-                if (response != null)
+                if (response?.StatusCode == HttpStatusCode.OK)
                 {
-                    if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        var jsonSerializer =
-                            new DataContractJsonSerializer
-                                (typeof (BalanceTypeResponse));
+                    var jsonSerializer =
+                        new DataContractJsonSerializer
+                            (typeof (BalanceTypeResponse));
 
-                        using (var stream = response.GetResponseStream())
+                    using (var stream = response.GetResponseStream())
+                    {
+                        if (stream != null)
                         {
-                            if (stream != null)
-                            {
-                                var objResponse = jsonSerializer.ReadObject
-                                    (
-                                        stream);
-                                jsonResponse =
-                                    objResponse as BalanceTypeResponse;
-                            }
+                            var objResponse = jsonSerializer.ReadObject
+                                (
+                                 stream);
+                            jsonResponse =
+                                objResponse as BalanceTypeResponse;
                         }
                     }
                 }
