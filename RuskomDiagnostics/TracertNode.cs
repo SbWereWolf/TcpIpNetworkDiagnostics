@@ -10,22 +10,14 @@ namespace RuskomDiagnostics
     public class TracertNode
     {
         /// <summary>
-        /// </summary>
-        private readonly long _roundTripTime;
-
-        /// <summary>
-        /// </summary>
-        private readonly IPStatus _status;
-
-        /// <summary>
         /// The time taken to go to the node and come back to the originating node in milliseconds.
         /// </summary>
-        public long RoundTripTime { get { return this._roundTripTime; } }
+        public long RoundTripTime { get ; }
 
         /// <summary>
         /// The <c>IPStatus</c> of request send to the node
         /// </summary>
-        public IPStatus Status { get { return this._status; } }
+        public IPStatus Status { get ; }
 
         /// <summary>
         /// The <c>IPAddress</c> of the node
@@ -47,8 +39,8 @@ namespace RuskomDiagnostics
             )
         {
             this.Address = address;
-            this._roundTripTime = roundTripTime;
-            this._status = status;
+            this.RoundTripTime = roundTripTime;
+            this.Status = status;
         }
     }
 }
