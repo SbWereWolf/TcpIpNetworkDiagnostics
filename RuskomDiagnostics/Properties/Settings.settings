@@ -1,0 +1,283 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="RuskomDiagnostics.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="BalanceString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.. Запрос баланса .. </Value>
+    </Setting>
+    <Setting Name="ShowBalloonTipWithShortMilliseconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="ShowBalloonTipWithGreatMilliseconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5000</Value>
+    </Setting>
+    <Setting Name="ConnectionsFineQualitySymptom" Type="System.String" Scope="User">
+      <Value Profile="(Default)">(0%</Value>
+    </Setting>
+    <Setting Name="EmptyColumnValue" Type="System.String" Scope="User">
+      <Value Profile="(Default)">&lt;нет значения&gt;</Value>
+    </Setting>
+    <Setting Name="DefaultColumnName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Колонка</Value>
+    </Setting>
+    <Setting Name="ApplicationIdentificator" Type="System.String" Scope="User">
+      <Value Profile="(Default)">RuskomDiagnostic</Value>
+    </Setting>
+    <Setting Name="Windows7MajorVersion" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">6</Value>
+    </Setting>
+    <Setting Name="Windows7MinorVersion" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="AllowOnlyOneProgramInstance" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Одновременно может работать только одна программа диагностики</Value>
+    </Setting>
+    <Setting Name="DisconnectOrInvalidConnection" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Отсутствует подключение к сети или неверные настройки сети</Value>
+    </Setting>
+    <Setting Name="RequestBalanceFail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Баланс лицевого счёта не известен</Value>
+    </Setting>
+    <Setting Name="BalanceTypeRequestFail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">FAIL</Value>
+    </Setting>
+    <Setting Name="BalanceTypeRequestOk" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ok</Value>
+    </Setting>
+    <Setting Name="PingTimeout" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">500</Value>
+    </Setting>
+    <Setting Name="SmallPingPackageSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">32</Value>
+    </Setting>
+    <Setting Name="BigPingPackageSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1200</Value>
+    </Setting>
+    <Setting Name="MeasuresCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="RuskomDiagnosticsRunPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">RuskomDiagnosticsRunPath</Value>
+    </Setting>
+    <Setting Name="UpdateStorageLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ftp://89.106.251.215/</Value>
+    </Setting>
+    <Setting Name="UpdateVersionFilename" Type="System.String" Scope="User">
+      <Value Profile="(Default)">version.info</Value>
+    </Setting>
+    <Setting Name="NewVersionAvailable" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Вышла новая версия, обновить ?</Value>
+    </Setting>
+    <Setting Name="AnonimusFtpUserName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">anonymous</Value>
+    </Setting>
+    <Setting Name="AnonimusPassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)">rk1@rk1.ru</Value>
+    </Setting>
+    <Setting Name="DownloadFail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Ошибка загрузки обновления</Value>
+    </Setting>
+    <Setting Name="QuestionPerformRestart" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Обновление установлено, перезапустить приложение ?</Value>
+    </Setting>
+    <Setting Name="ActualVersionInstalled" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Установлена актуальная версия, обновления не требуется</Value>
+    </Setting>
+    <Setting Name="ResultComponentsDelimiter" Type="System.String" Scope="User">
+      <Value Profile="(Default)">,</Value>
+    </Setting>
+    <Setting Name="SpeedTestExecutable" Type="System.String" Scope="User">
+      <Value Profile="(Default)">iperf.exe</Value>
+    </Setting>
+    <Setting Name="SpeedTestLibrary1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">cyggcc_s-1.dll</Value>
+    </Setting>
+    <Setting Name="SpeedTestLibrary2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">cygstdc++-6.dll</Value>
+    </Setting>
+    <Setting Name="SpeedTestLibrary3" Type="System.String" Scope="User">
+      <Value Profile="(Default)">cygwin1.dll</Value>
+    </Setting>
+    <Setting Name="SpeedTestProgramArguments" Type="System.String" Scope="User">
+      <Value Profile="(Default)">-y C -c</Value>
+    </Setting>
+    <Setting Name="PingExecutable" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ping.exe</Value>
+    </Setting>
+    <Setting Name="TracertExecutable" Type="System.String" Scope="User">
+      <Value Profile="(Default)">tracert.exe</Value>
+    </Setting>
+    <Setting Name="TracertArguments" Type="System.String" Scope="User">
+      <Value Profile="(Default)">-w 1000</Value>
+    </Setting>
+    <Setting Name="TimeComponentIndex" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="SpeedTestIpComponentIndex" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="TestingPeriodComponentIndex" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">6</Value>
+    </Setting>
+    <Setting Name="DataSentVolumeComponentIndex" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">7</Value>
+    </Setting>
+    <Setting Name="NetworkSpeedComponentIndex" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">8</Value>
+    </Setting>
+    <Setting Name="NewLinesSymptom" Type="System.String" Scope="User">
+      <Value Profile="(Default)">\\n</Value>
+    </Setting>
+    <Setting Name="LetAutorunThisVersionQuestion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Настроена автозапуска другой версии, автоматически запускать эту версию?</Value>
+    </Setting>
+    <Setting Name="LetAutorunApplicationQuestion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Запускать приложение автоматически при загрузке ? </Value>
+    </Setting>
+    <Setting Name="AutorunEnablingError" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Ошибка добавления в Автозагрузку</Value>
+    </Setting>
+    <Setting Name="AutorunDisablingError" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Ошибка удаления из Автозагрузки</Value>
+    </Setting>
+    <Setting Name="DeletingFileError" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Файл '{0}' существует, при его удалении произошла ошибка</Value>
+    </Setting>
+    <Setting Name="PostRequestTimeout" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">999</Value>
+    </Setting>
+    <Setting Name="SpeedTestResultAsColumnFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Статус измерения {0}, Время {1}, Адрес {2}, Передано {3} (МБайт), Скорость {4} (Мбит/с) = {5} (МБайт/с);</Value>
+    </Setting>
+    <Setting Name="SpeedTestResultAsStringFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Проверка скорости локальной сети;{0}Статус измерения {1};{0}Время {2};{0}Скорость {5} (Мбит/с) = {6} (МБайт/с);</Value>
+    </Setting>
+    <Setting Name="SpeedTestParseTimeFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">yyyyMMddHHmmss</Value>
+    </Setting>
+    <Setting Name="SpeedTestTimeFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">dd.MM.yyyy HH:mm:ss</Value>
+    </Setting>
+    <Setting Name="TestResultNumericFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">F</Value>
+    </Setting>
+    <Setting Name="ActionStatusError" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Ошибка</Value>
+    </Setting>
+    <Setting Name="ActionStatusFail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Сбой</Value>
+    </Setting>
+    <Setting Name="ActionStatusOk" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Завершено</Value>
+    </Setting>
+    <Setting Name="ActionStatusUnknown" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Неопределённый</Value>
+    </Setting>
+    <Setting Name="ShowRequisitesFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">01) Имя &lt;{0}&gt;{1}02) Статус &lt;{2}&gt;{1}03) Карта &lt;{3}&gt;{1}04) Мак адрес &lt;{4}&gt;{1}05) Айпи адрес &lt;{5}&gt;{1}06) Маска &lt;{6}&gt;{1}07) Шлюз &lt;{7}&gt;{1}08) ДэЭнЭс &lt;{8}&gt;{1}</Value>
+    </Setting>
+    <Setting Name="SendDiagnosticsFail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Общая ошибка</Value>
+    </Setting>
+    <Setting Name="PostDiagnosticsResponceFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Status=&lt;{0}&gt; , Message=&lt;{1}&gt;</Value>
+    </Setting>
+    <Setting Name="ConnectionFineQuality" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Качество связи отличное</Value>
+    </Setting>
+    <Setting Name="ConnectionLoses" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Обнаружины возможные проблемы с соединением, вы можете связаться со службой технической подержки по телефону 221-32-50 с 08 до 23 часов любого дня.</Value>
+    </Setting>
+    <Setting Name="WaitWhileTestProcessed" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Происходит проверка связи. Пожалуйста, ждите.</Value>
+    </Setting>
+    <Setting Name="DiagnosticsApplicationRunning" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Приложение проверки связи начинает работу</Value>
+    </Setting>
+    <Setting Name="DisableDiagnosticsAutorun" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Убрать Диагностику из Автозапуска ?</Value>
+    </Setting>
+    <Setting Name="TestingNetworkSpeed" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Происходит измерение скорости. Не закрывайте это окно.</Value>
+    </Setting>
+    <Setting Name="SpeedTestServerAddress" Type="System.String" Scope="User">
+      <Value Profile="(Default)">89.106.248.22</Value>
+    </Setting>
+    <Setting Name="ApplicationFilename" Type="System.String" Scope="User">
+      <Value Profile="(Default)">RuskomDiagnostics</Value>
+    </Setting>
+    <Setting Name="CommunicationPeriodMilliseconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">900000</Value>
+    </Setting>
+    <Setting Name="ApplicationFileExtension" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.exe</Value>
+    </Setting>
+    <Setting Name="UserStartupRegistryPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run</Value>
+    </Setting>
+    <Setting Name="NetworkAdaptersRequisitesFromTitle" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Реквизиты сетевых подкючений</Value>
+    </Setting>
+    <Setting Name="PathEnvironmentVariableName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PATH</Value>
+    </Setting>
+    <Setting Name="PostDiagnosticsResultFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">type=lan_diag&amp;gwrs={0}&amp;rk1rs={1}&amp;ggrs={2}&amp;gwlost={3}&amp;rk1lost={4}&amp;gglost={5}&amp;biggwrs={6}&amp;bigrk1rs={7}&amp;bigggrs={8}&amp;biggwlost={9}&amp;bigrk1lost={10}&amp;biggglost={11}&amp;laniperfip={12}&amp;laniperfspeed={13}&amp;osv={14}&amp;d_ip={15}&amp;d_mac={16}&amp;d_t={17}</Value>
+    </Setting>
+    <Setting Name="ShowBalanceTitle" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Баланс</Value>
+    </Setting>
+    <Setting Name="SpeedTestError" Type="System.String" Scope="User">
+      <Value Profile="(Default)">При выполнении проверки скорости произошла ошибка</Value>
+    </Setting>
+    <Setting Name="SpeedTestFail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">При выполнении проверки скорости произошёл сбой</Value>
+    </Setting>
+    <Setting Name="BalanceRequest" Type="System.String" Scope="User">
+      <Value Profile="(Default)">type=balance</Value>
+    </Setting>
+    <Setting Name="TraceCompliteMessage" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Построение маршрута завершенно</Value>
+    </Setting>
+    <Setting Name="DayInMilliseconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">86400000</Value>
+    </Setting>
+    <Setting Name="NetworkRequisitesWillBeHere" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Здесь будут написаны реквизиты сетевых соединений . Пожалуйста ждите</Value>
+    </Setting>
+    <Setting Name="NetshExecutable" Type="System.String" Scope="User">
+      <Value Profile="(Default)">netsh.exe</Value>
+    </Setting>
+    <Setting Name="NetshProgramArguments" Type="System.String" Scope="User">
+      <Value Profile="(Default)">interface ipv4 show config</Value>
+    </Setting>
+    <Setting Name="TraceComplite" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Построение маршрута завершенно</Value>
+    </Setting>
+    <Setting Name="CmdCodePage" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">866</Value>
+    </Setting>
+    <Setting Name="ShowContactsTitle" Type="System.String" Scope="User">
+      <Value Profile="(Default)">РусКом Контакты</Value>
+    </Setting>
+    <Setting Name="ShowContactsMessage" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Абон.отдел:
+Адрес: Щорса, д. 7
+Телефон: 251-93-00
+e-mail: rk1@rk1.ru
+Время работы:
+С ПОНЕДЕЛЬНИКА ПО ПЯТНИЦУ 
+С 09:00 ДО 20:00 
+СУББОТА, ВОСКРЕСЕНЬЕ – ВЫХОДНОЙ
+
+
+Тех.поддержка:
+Телефон: 221-32-50
+e-mail: support@rk1.ru
+Время работы:
+С 08:00 до 23:00
+КАЖДЫЙ ДЕНЬ
+</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
