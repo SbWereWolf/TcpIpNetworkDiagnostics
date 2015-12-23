@@ -2883,13 +2883,13 @@ e-mail: support@rk1.ru
         /// <param name="registryKeyName"></param>
         public static void ProcessAutoRunOption
             (
-            [ NotNull ] ToolStripMenuItem toolStripMenuItem ,
-            [ NotNull ] RegistryKey userStartUpRunApplicationRegistryKey ,
-            string applicationsExecutablePath ,
+            [ CanBeNull ] ToolStripMenuItem toolStripMenuItem ,
+            [CanBeNull] RegistryKey userStartUpRunApplicationRegistryKey ,
+            [CanBeNull] string applicationsExecutablePath ,
             // ReSharper disable UnusedParameter.Global
-            string applicationName ,
+            [CanBeNull] string applicationName ,
             // ReSharper restore UnusedParameter.Global
-            [ NotNull ] string registryKeyName )
+            [CanBeNull] string registryKeyName )
         {
 
             var registryApplicationsExecutablePath = string.Format
@@ -2898,91 +2898,16 @@ e-mail: support@rk1.ru
                  '"' ,
                  applicationsExecutablePath ) ;
 
-            //var isApplicationAutoRun = Handler.IsRegistryKeyExists
-            //    (
-            //     userStartUpRunApplicationRegistryKey,
-            //     registryKeyName);
-
-            //var registryExecutionPathObject = userStartUpRunApplicationRegistryKey
-            //    .GetValue
-            //    (
-            //     registryKeyName);
-
-            //var registryExecutionPathAsString =
-            //    registryExecutionPathObject == null
-            //        ? string.Empty
-            //        : registryExecutionPathObject
-            //              .ToString();
-
-            //var setUpAutoRun = false;
-
-            //if ( isApplicationAutoRun )
-            //{
-            //    if ( string.Equals
-            //        (
-            //         registryExecutionPathAsString ,
-            //         registryApplicationsExecutablePath ,
-            //         StringComparison.InvariantCultureIgnoreCase ) )
-            //    {
-            //        toolStripMenuItem.Checked = true ;
-            //    }
-            //    else
-            //    // if (string.Equals(registryExecutionPathAsString, applicationsExecutablePath, StringComparison.InvariantCultureIgnoreCase))
-            //    {
-            //        var userDecision = MessageBox.Show
-            //            (
-            //             Handler.LetAutorunThisVersionQuestion ,
-            //             applicationName ,
-            //             MessageBoxButtons.YesNo ,
-            //             MessageBoxIcon.Question ) ;
-            //        if ( userDecision == DialogResult.Yes )
-            //        {
-            //            setUpAutoRun = true ;
-            //        }
-            //        else // if (userDecision == DialogResult.Yes)
-            //        {
-            //            toolStripMenuItem.Checked = false ;
-            //        } // if (userDecision == DialogResult.Yes)
-            //    }
-            //    // if (string.Equals(registryExecutionPathAsString, applicationsExecutablePath, StringComparison.InvariantCultureIgnoreCase))
-            //}
-            //else // if (isApplicationAutoRun )
-            //{
-            //    var userDecision = MessageBox.Show
-            //        (
-            //         Handler.LetAutorunApplicationQuestion ,
-            //         applicationName ,
-            //         MessageBoxButtons.YesNo ,
-            //         MessageBoxIcon.Question ) ;
-            //    if ( userDecision == DialogResult.Yes )
-            //    {
-            //        setUpAutoRun = true ;
-            //    }
-            //    else // if (userDecision == DialogResult.Yes)
-            //    {
-            //        toolStripMenuItem.Checked = false ;
-            //    } // if (userDecision == DialogResult.Yes)
-            //} // if (isApplicationAutoRun )
-
-            //if ( setUpAutoRun )
-            //{
-            //    var setUpAutorunResult = Handler.ProcessAutorun
-            //        (
-            //         Handler.C_SetAutorun ,
-            //         userStartUpRunApplicationRegistryKey ,
-            //         registryApplicationsExecutablePath ,
-            //         registryKeyName ) ;
-            //    toolStripMenuItem.Checked = setUpAutorunResult ;
-            //}
-
             var setUpAutorunResult = Handler.ProcessAutorun
                 (
                  Handler.C_SetAutorun,
                  userStartUpRunApplicationRegistryKey,
                  registryApplicationsExecutablePath,
                  registryKeyName);
-            toolStripMenuItem.Checked = setUpAutorunResult;
-
+            if ( toolStripMenuItem != null )
+            {
+                toolStripMenuItem.Checked = setUpAutorunResult;
+            }
         }
 
         /// <summary>
@@ -2996,19 +2921,20 @@ e-mail: support@rk1.ru
         public static bool ProcessAutorun
             (
             bool setOrDisableAutorun ,
-            [ NotNull ] RegistryKey userStartUpRunApplicationRegistryKey ,
-            [ NotNull ] string setAutoRunPath ,
-            [ NotNull ] string registryKeyName )
+            [CanBeNull] RegistryKey userStartUpRunApplicationRegistryKey ,
+            [CanBeNull] string setAutoRunPath ,
+            [CanBeNull] string registryKeyName )
         {
             var isActionSuccessful = false ;
-            if ( setOrDisableAutorun )
+            if ( setOrDisableAutorun 
+                && (setAutoRunPath != null))
             {
                 try
                 {
-                    userStartUpRunApplicationRegistryKey.SetValue
+                    userStartUpRunApplicationRegistryKey?.SetValue
                         (
-                         registryKeyName ,
-                         setAutoRunPath ) ;
+                            registryKeyName ,
+                            setAutoRunPath ) ;
                     isActionSuccessful = true ;
                 }
                 catch ( Exception )
@@ -3022,10 +2948,13 @@ e-mail: support@rk1.ru
             {
                 try
                 {
-                    userStartUpRunApplicationRegistryKey.DeleteValue
-                        (
-                         registryKeyName ,
-                         false ) ;
+                    if ( registryKeyName != null )
+                    {
+                        userStartUpRunApplicationRegistryKey?.DeleteValue
+                            (
+                                registryKeyName ,
+                                false ) ;
+                    }
                     isActionSuccessful = true ;
                 }
                 catch ( Exception )
@@ -3058,16 +2987,16 @@ e-mail: support@rk1.ru
             // ReSharper restore FunctionComplexityOverflow
             // ReSharper restore FunctionComplexityOverflow
             (
-            string applicationName,
-            string applicationStartupPath,
-            RegistryKey userStartUpRunApplicationRegistryKey,
-            ToolStripMenuItem autorunMenuItem,
-            string applicationFilename,
-            string applicationFileExtension,
+            [ CanBeNull ] string applicationName,
+            [CanBeNull] string applicationStartupPath,
+            [CanBeNull] RegistryKey userStartUpRunApplicationRegistryKey,
+            [CanBeNull] ToolStripMenuItem autorunMenuItem,
+            [CanBeNull] string applicationFilename,
+            [CanBeNull] string applicationFileExtension,
             bool isSilent,
-            string applicationVersion,
-            string registryKeyName,
-            string updateStorageLocation)
+            [CanBeNull] string applicationVersion,
+            [CanBeNull] string registryKeyName,
+            [CanBeNull] string updateStorageLocation)
         {
             var isUpdateChecked = false;
 

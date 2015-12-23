@@ -42,12 +42,15 @@ namespace RuskomDiagnostics
         /// </summary>
         private const int C_ShowBalloonTipWithGreatMilliseconds = 5000 ;
 
-         
+        // ReSharper disable StringLiteralsWordIsNotInDictionary
+
         /// <summary>
         /// </summary>
         private const string C_DiagnosticsApplicationRunning =
             
+            
             "Приложение проверки связи начинает работу" ;
+        
         
 
         /// <summary>
@@ -63,6 +66,8 @@ namespace RuskomDiagnostics
         /// <summary>
         /// </summary>
         private const string C_ApplicationFileExtension = ".exe" ;
+
+        // ReSharper restore StringLiteralsWordIsNotInDictionary
 
         /// <summary>
         /// </summary>
@@ -85,13 +90,11 @@ namespace RuskomDiagnostics
 
         /// <summary>
         /// </summary>
-        private readonly string _applicationExecutablePath =
-            Application.ExecutablePath ;
+        private string ApplicationExecutablePath { get ; } = Application.ExecutablePath ;
 
         /// <summary>
         /// </summary>
-        private readonly string _applicationName =
-            Program.ApplicationIdentifier ;
+        private string ApplicationName { get ; } = Program.ApplicationIdentifier ;
 
         /// <summary>
         /// </summary>
@@ -100,7 +103,7 @@ namespace RuskomDiagnostics
 
         /// <summary>
         /// </summary>
-        private readonly string _startupRegistryKeyName ;
+        private string StartupRegistryKeyName { get ; }
 
         /// <summary>
         /// </summary>
@@ -147,7 +150,7 @@ namespace RuskomDiagnostics
                                                        .DayInMilliseconds
                                              : RuskomDiagnosticsForm.C_DayInMilliseconds ;
 
-                this._startupRegistryKeyName =
+                this.StartupRegistryKeyName =
                     Settings.Default.RuskomDiagnosticsRunPath
                     ?? RuskomDiagnosticsForm.C_StartupRegistryKeyName ;
                 this.UserStartupRegistryPath =
@@ -179,7 +182,7 @@ namespace RuskomDiagnostics
                     RuskomDiagnosticsForm.C_ShowBalloonTipWithGreatMilliseconds ;
                 this.DayInMilliseconds = RuskomDiagnosticsForm.C_DayInMilliseconds ;
 
-                this._startupRegistryKeyName =
+                this.StartupRegistryKeyName =
                     RuskomDiagnosticsForm.C_StartupRegistryKeyName ;
                 this.UserStartupRegistryPath = RuskomDiagnosticsForm.C_UserStartupRegistryPath ;
                 this.DiagnosticsApplicationRunning =
@@ -274,7 +277,7 @@ namespace RuskomDiagnostics
                     hostMenuNotifyIcon.ShowBalloonTip
                         (
                          this.ShowBalloonTipWithShortMilliseconds ,
-                         this._applicationName ,
+                         this.ApplicationName ,
                          diagnosticsApplicationRunning ,
                          ToolTipIcon.Info ) ;
                 }
@@ -308,10 +311,14 @@ namespace RuskomDiagnostics
 
                 try
                 {
-                    this.CheckUpdate
-                        (
-                         true ,
-                         this._startupRegistryKeyName ) ;
+                    var registryKeyName = this.StartupRegistryKeyName ;
+                    if ( registryKeyName != null )
+                    {
+                        this.CheckUpdate
+                            (
+                                true ,
+                                registryKeyName ) ;
+                    }
                 }
                     // ReSharper disable EmptyGeneralCatchClause
                 catch ( Exception )
@@ -322,19 +329,25 @@ namespace RuskomDiagnostics
                 var toolStripMenuItem = this.autorunToolStripMenuItem ;
                 var userStartUpRunApplicationRegistryKey =
                     this._userStartUpRegistryKey ;
-                var startupRegistryKeyName = this._startupRegistryKeyName ;
+                var startupRegistryKeyName = this.StartupRegistryKeyName ;
                 if ( toolStripMenuItem != null
                      && userStartUpRunApplicationRegistryKey != null
                      && startupRegistryKeyName != null )
                 {
-                    Handler.ProcessAutoRunOption
-                        (
-                         toolStripMenuItem
-                         , userStartUpRunApplicationRegistryKey
-                         , this._applicationExecutablePath
-                         , this._applicationName
-                         , startupRegistryKeyName
-                        ) ;
+                    var applicationsExecutablePath = this.ApplicationExecutablePath ;
+                    var applicationName = this.ApplicationName;
+                    if ( applicationsExecutablePath != null
+                        && (applicationName != null))
+                    {
+                        Handler.ProcessAutoRunOption
+                            (
+                                toolStripMenuItem ,
+                                userStartUpRunApplicationRegistryKey ,
+                                applicationsExecutablePath ,
+                                applicationName ,
+                                startupRegistryKeyName
+                            ) ;
+                    }
                 }
 
                 this.WindowState = FormWindowState.Minimized ;
@@ -346,7 +359,7 @@ namespace RuskomDiagnostics
                     hostMenuNotifyIcon.ShowBalloonTip
                         (
                          this.ShowBalloonTipWithGreatMilliseconds ,
-                         this._applicationName ,
+                         this.ApplicationName ,
                          hostMenuNotifyIcon.Text ,
                          ToolTipIcon.Info ) ;
                 }
@@ -370,14 +383,16 @@ namespace RuskomDiagnostics
             if ( ! string.IsNullOrEmpty ( balanceString ) )
             {
                 var hostMenuNotifyIcon = this.HostMenuNotifyIcon ;
-                if ( hostMenuNotifyIcon != null )
+                var applicationName = this.ApplicationName;
+                if ( hostMenuNotifyIcon != null 
+                    && (applicationName != null))
                 {
                     Handler.SetBalanceMessage
                         (
-                         hostMenuNotifyIcon ,
-                         balanceString ,
-                         this.ShowBalloonTipWithShortMilliseconds ,
-                         this._applicationName
+                            hostMenuNotifyIcon ,
+                            balanceString ,
+                            this.ShowBalloonTipWithShortMilliseconds ,
+                            applicationName
                         ) ;
                 }
             }
@@ -396,7 +411,7 @@ namespace RuskomDiagnostics
         {
             var isUpdateChecked = Handler.CheckUpdate
                 (
-                 this._applicationName,
+                 this.ApplicationName,
                  Program.ApplicationStartupPath,
                  this._userStartUpRegistryKey ,
                  this.autorunToolStripMenuItem ,
@@ -620,8 +635,8 @@ namespace RuskomDiagnostics
         {
             var userStartUpRunApplicationRegistryKey =
                 this._userStartUpRegistryKey ;
-            var applicationExecutablePath = this._applicationExecutablePath ;
-            var startupRegistryKeyName = this._startupRegistryKeyName ;
+            var applicationExecutablePath = this.ApplicationExecutablePath ;
+            var startupRegistryKeyName = this.StartupRegistryKeyName ;
             var toolStripMenuItem = this.autorunToolStripMenuItem ;
             var isMenuItemChecked = toolStripMenuItem != null
                                     && toolStripMenuItem.Checked ;
@@ -629,14 +644,14 @@ namespace RuskomDiagnostics
             if ( isMenuItemChecked )
             {
                 if ( userStartUpRunApplicationRegistryKey != null
-                     && startupRegistryKeyName != null )
+                     && ( startupRegistryKeyName != null ) )
                 {
                     Handler.ProcessAutoRunOption
                         (
                          toolStripMenuItem ,
                          userStartUpRunApplicationRegistryKey
-                         , this._applicationExecutablePath
-                         , this._applicationName ,
+                         , this.ApplicationExecutablePath
+                         , this.ApplicationName ,
                          startupRegistryKeyName ) ;
                 }
             }
@@ -644,7 +659,7 @@ namespace RuskomDiagnostics
             {
                 var userDecision = MessageBox.Show
                     (
-                     this.DisableDiagnosticsAutorun , this._applicationName ,
+                     this.DisableDiagnosticsAutorun , this.ApplicationName ,
                      MessageBoxButtons.YesNo , MessageBoxIcon.Question ) ;
                 if ( userDecision == DialogResult.Yes )
                 {
@@ -676,7 +691,7 @@ namespace RuskomDiagnostics
         /// <param name="e"></param>
         private void CheckUpdateButton_Click ( object sender , EventArgs e )
         {
-            this.CheckUpdate ( false , this._startupRegistryKeyName ) ;
+            this.CheckUpdate ( false , this.StartupRegistryKeyName ) ;
         }
 
         /// <summary>
@@ -686,7 +701,7 @@ namespace RuskomDiagnostics
         private void проверитьОбновлениеToolStripMenuItem_Click
             ( object sender , EventArgs e )
         {
-            this.CheckUpdate ( false , this._startupRegistryKeyName ) ;
+            this.CheckUpdate ( false , this.StartupRegistryKeyName ) ;
         }
 
         /// <summary>
@@ -761,7 +776,7 @@ namespace RuskomDiagnostics
             if ( this._initializeComplete )
             {
                 Handler.ShowBalance
-                    ( this.HostMenuNotifyIcon , this , this._applicationName ) ;
+                    ( this.HostMenuNotifyIcon , this , this.ApplicationName ) ;
             }
         }
 
@@ -855,7 +870,7 @@ namespace RuskomDiagnostics
                     var isUpdateChecked = this.CheckUpdate
                         (
                             isSilent: true,
-                            startupRegistryKeyName: this._startupRegistryKeyName);
+                            startupRegistryKeyName: this.StartupRegistryKeyName);
 
                     if (isUpdateChecked)
                     {
