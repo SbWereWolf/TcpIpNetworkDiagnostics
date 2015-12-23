@@ -94,6 +94,7 @@ namespace RuskomDiagnostics
         /// <summary>
         /// </summary>
         /// <returns></returns>
+        [ CanBeNull ]
         private string CopyResult ( )
             // ReSharper restore UnusedMethodReturnValue.Local
         {
@@ -173,15 +174,15 @@ namespace RuskomDiagnostics
         /// <param name="outputForm"></param>
         private static void ViewSpeedTestResult
             (
-            Control speedTestResultTextBox
-            , Button doTestSpeedButton
-            , Button doCloseButton
-            , ProgressBar testingProcessProgressBar
-            , SpeedTestForm outputForm
+            [ CanBeNull ] Control speedTestResultTextBox ,
+            [ CanBeNull ] Button doTestSpeedButton ,
+            [ CanBeNull ] Button doCloseButton ,
+            [ CanBeNull ] ProgressBar testingProcessProgressBar ,
+            [ CanBeNull ] SpeedTestForm outputForm
             )
         {
-            if ( outputForm != null
-                 && speedTestResultTextBox != null )
+            if ( ( outputForm != null )
+                 && ( speedTestResultTextBox != null ) )
             {
                 speedTestResultTextBox.Text = Handler.TestingNetworkSpeed;
                 speedTestResultTextBox.Refresh( ) ;
@@ -207,10 +208,7 @@ namespace RuskomDiagnostics
                         speedTestResultTextBox.Text =
                             Handler.DisconnectOrInvalidConnection ;
                         var onOnExecutableFinish = outputForm.OnExecutableFinish ;
-                        if ( onOnExecutableFinish != null )
-                        {
-                            onOnExecutableFinish( ) ;
-                        }
+                        onOnExecutableFinish?.Invoke( ) ;
                     }
                     else
                     {
@@ -225,19 +223,16 @@ namespace RuskomDiagnostics
                             speedTestResultTextBox ,
                             outputForm ) ;
 
-                        if ( testParameters.MethodsInputs != null )
-                        {
-                            testParameters.MethodsInputs.Add
-                                (
-                                    new SpeedTestInput
-                                    {
-                                        HostName =
-                                            Handler
-                                            .SpeedTestServerAddress ,
-                                        Program =
-                                            Handler.SpeedTestProgram
-                                    } ) ;
-                        }
+                        testParameters.MethodsInputs?.Add
+                            (
+                                new SpeedTestInput
+                                {
+                                    HostName =
+                                        Handler
+                                        .SpeedTestServerAddress ,
+                                    Program =
+                                        Handler.SpeedTestProgram
+                                } ) ;
 
                         var testConnectionThread = new Thread ( SpeedTestForm.GetSpeedTestResult ) ;
                         testConnectionThread.Start ( testParameters ) ;
@@ -249,7 +244,8 @@ namespace RuskomDiagnostics
         /// <summary>
         /// </summary>
         /// <param name="speedTestInput"></param>
-        private static void GetSpeedTestResult ( object speedTestInput )
+        private static void GetSpeedTestResult (
+            [ CanBeNull ] object speedTestInput )
         {
             var speedTestsInput = ( SpeedTestsInput ) speedTestInput ;
             if ( speedTestsInput != null )
@@ -296,28 +292,15 @@ namespace RuskomDiagnostics
                     ( SpeedTestForm.SetControlText ) ;
 
                 var textControl = speedTestsInput.ResultOutputControl ;
-                if ( textControl != null )
-                {
-                    textControl.BeginInvoke
-                        (
-                         setControlText ,
-                         textControl ,
-                         testsResult ) ;
-                }
+                textControl?.BeginInvoke
+                    (
+                        setControlText ,
+                        textControl ,
+                        testsResult ) ;
             }
 
-            if ( speedTestsInput != null )
-            {
-                if ( speedTestsInput.SpeedTestForm != null )
-                {
-                    var onExecutableFinish = speedTestsInput.SpeedTestForm.OnExecutableFinish;
-                    if (onExecutableFinish
-                         != null )
-                    {
-                        onExecutableFinish();
-                    }
-                }
-            }
+            var onExecutableFinish = speedTestsInput?.SpeedTestForm?.OnExecutableFinish;
+            onExecutableFinish?.Invoke();
         }
 
         /// <summary>
