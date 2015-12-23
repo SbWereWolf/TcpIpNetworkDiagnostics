@@ -100,10 +100,10 @@ namespace RuskomDiagnostics.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute("RuskomDiagnostic")]
         public string ApplicationIdentificator {
             get {
-                return ((string)(this["ApplicationIdentificator"]));
+                return ((string)(this["ApplicationIdentifier"]));
             }
             set {
-                this["ApplicationIdentificator"] = value;
+                this["ApplicationIdentifier"] = value;
             }
         }
         

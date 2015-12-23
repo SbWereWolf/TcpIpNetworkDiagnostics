@@ -89,7 +89,7 @@ namespace RuskomDiagnostics
         /// <summary>
         /// </summary>
         private readonly string _applicationName =
-            Program.ApplicationIdentificator ;
+            Program.ApplicationIdentifier ;
 
         /// <summary>
         /// </summary>

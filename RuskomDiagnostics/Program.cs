@@ -11,14 +11,15 @@ namespace RuskomDiagnostics
     {
         /// <summary>
         /// </summary>
-        public static int NormalExitCode  { get {  return -1; } }
+        public static int NormalExitCode => -1 ;
+
         /// <summary>
         /// </summary>
         public static string OsName { get; private set; }
 
         /// <summary>
         /// </summary>
-        public static string ApplicationIdentificator { get ; private set ; }
+        public static string ApplicationIdentifier { get ; private set ; }
 
         /// <summary>
         /// </summary>
@@ -30,10 +31,12 @@ namespace RuskomDiagnostics
 
         static Program ( )
         {
+            // ReSharper disable StringLiteralsWordIsNotInDictionary
             const string C_ApplicationIdentificator = "RuskomDiagnostics" ;
+            
             const string C_AllowOnlyOneProgramInstance =
                 "Одновременно может работать только одна программа диагностики" ;
-
+            // ReSharper restore StringLiteralsWordIsNotInDictionary
             const int C_Windows7MajorVersion = 6 ;
             const int C_Windows7MinorVersion = 1 ;
 
@@ -41,7 +44,7 @@ namespace RuskomDiagnostics
 
             if ( Settings.Default != null )
             {
-                Program.ApplicationIdentificator =
+                Program.ApplicationIdentifier =
                     Settings.Default.ApplicationIdentificator ??
                     C_ApplicationIdentificator ;
                 Program.AllowOnlyOneProgramInstance =
@@ -59,7 +62,7 @@ namespace RuskomDiagnostics
             }
             else
             {
-                Program.ApplicationIdentificator = C_ApplicationIdentificator ;
+                Program.ApplicationIdentifier = C_ApplicationIdentificator ;
                 Program.AllowOnlyOneProgramInstance = C_AllowOnlyOneProgramInstance ;
 
                 Program.Windows7MajorVersion = C_Windows7MajorVersion ;
@@ -94,7 +97,7 @@ namespace RuskomDiagnostics
                     {
                         bool result ;
                         var mutex = new Mutex
-                            ( true , Program.ApplicationIdentificator , out result ) ;
+                            ( true , Program.ApplicationIdentifier , out result ) ;
 
                         if ( ! result )
                         {

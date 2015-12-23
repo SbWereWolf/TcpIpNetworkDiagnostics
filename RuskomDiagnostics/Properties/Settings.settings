@@ -20,7 +20,7 @@
     <Setting Name="DefaultColumnName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Колонка</Value>
     </Setting>
-    <Setting Name="ApplicationIdentificator" Type="System.String" Scope="User">
+    <Setting Name="ApplicationIdentifier" Type="System.String" Scope="User">
       <Value Profile="(Default)">RuskomDiagnostic</Value>
     </Setting>
     <Setting Name="Windows7MajorVersion" Type="System.Int32" Scope="User">
