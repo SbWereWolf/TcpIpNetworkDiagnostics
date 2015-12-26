@@ -521,8 +521,14 @@ namespace RuskomDiagnostics
         {
             if ( this._initializeComplete )
             {
-                var speedTestForm = new SpeedTestForm( ) ;
-                speedTestForm.ShowDialog ( this ) ;
+                if ( Handler.SpeedTestProgram != null )
+                {
+                    var speedTestForm = new SpeedTestForm
+                        (
+                        Handler.SpeedTestProgram.ExecutableFile ,
+                        Handler.SpeedTestProgram.ProgramsFiles ) ;
+                    speedTestForm.ShowDialog ( this ) ;
+                }
             }
         }
 

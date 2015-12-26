@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Диагностика интернет соединения")]
-[assembly: AssemblyDescription("Диагностика связи с сервером Рускома")]
+[assembly: AssemblyDescription("Диагностика соединения с  Рускомом")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ruskom IT")]
 [assembly: AssemblyProduct("Ruskom Diagnostics")]
@@ -32,4 +32,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.0.0.4")]
-[assembly: AssemblyFileVersion("0.0.0.44")]
+[assembly: AssemblyFileVersion("0.0.0.46")]

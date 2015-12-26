@@ -98,8 +98,8 @@
     <Setting Name="SpeedTestLibrary3" Type="System.String" Scope="User">
       <Value Profile="(Default)">cygwin1.dll</Value>
     </Setting>
-    <Setting Name="SpeedTestProgramArguments" Type="System.String" Scope="User">
-      <Value Profile="(Default)">-y C -c</Value>
+    <Setting Name="SpeedTestProgramSerialTypeArguments" Type="System.String" Scope="User">
+      <Value Profile="(Default)">-y C -c 89.106.248.22</Value>
     </Setting>
     <Setting Name="PingExecutable" Type="System.String" Scope="User">
       <Value Profile="(Default)">ping.exe</Value>
@@ -278,6 +278,12 @@ e-mail: support@rk1.ru
 С 08:00 до 23:00
 КАЖДЫЙ ДЕНЬ
 </Value>
+    </Setting>
+    <Setting Name="SpeedTestProgramParallelTypeArguments" Type="System.String" Scope="User">
+      <Value Profile="(Default)">-c 89.106.248.22 -y C -P 5</Value>
+    </Setting>
+    <Setting Name="UseSerialSpeedTestType" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

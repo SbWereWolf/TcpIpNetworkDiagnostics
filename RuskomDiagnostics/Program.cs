@@ -11,7 +11,7 @@ namespace RuskomDiagnostics
     {
         /// <summary>
         /// </summary>
-        public static int NormalExitCode => -1 ;
+        public static int NormalExitCode { get ; } = -1 ;
 
         /// <summary>
         /// </summary>
@@ -45,10 +45,10 @@ namespace RuskomDiagnostics
             if ( Settings.Default != null )
             {
                 Program.ApplicationIdentifier =
-                    Settings.Default.ApplicationIdentificator ??
+                    Settings.Default.ApplicationIdentifier ??
                     C_ApplicationIdentificator ;
                 Program.AllowOnlyOneProgramInstance =
-                    Settings.Default.ApplicationIdentificator ??
+                    Settings.Default.AllowOnlyOneProgramInstance ??
                     C_AllowOnlyOneProgramInstance ;
 
                 Program.Windows7MajorVersion =

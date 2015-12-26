@@ -26,6 +26,45 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
     /// <summary>
     /// 
     /// </summary>
+    public sealed class SpeedTestInput
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum TestType
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            Parallel,
+            /// <summary>
+            /// 
+            /// </summary>
+            Serial
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public ProcessExecuteParameters Program;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public TestType SpeedTestType;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public SpeedTestInput()
+        {
+            this.SpeedTestType = TestType.Parallel;
+            this.Program = null;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     public class InterfaceIpV4Address
     {
         /// <summary>
@@ -340,11 +379,11 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
     /// </summary>
     public sealed class DiagnosticResult
     {
-        /// <summary>
         // ReSharper disable WordIsNotInDictionary
+        /// <summary>
         /// Состояние подключения 
-        // ReSharper restore WordIsNotInDictionary
         /// </summary>
+        /// // ReSharper restore WordIsNotInDictionary
         public enum ClientConnectionState
         {
             /// <summary>
@@ -480,7 +519,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         /// <summary>
         /// 
         /// </summary>
-        private readonly List < string > _programsFiles ;
+        public readonly List < string > ProgramsFiles ;
 
         /// <summary>
         /// 
@@ -490,14 +529,14 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         /// <param name="programsFiles"></param>
         public ProcessExecuteParameters
             (
-            string executableFile ,
-            string programArguments ,
-            List < string > programsFiles
+            [ CanBeNull ] string executableFile ,
+            [ CanBeNull ] string programArguments ,
+            [ CanBeNull ] List < string > programsFiles
             )
         {
             this.ExecutableFile = executableFile ;
             this._programArguments = programArguments ;
-            this._programsFiles = programsFiles ;
+            this.ProgramsFiles = programsFiles ;
         }
 
         /// <summary>
@@ -508,7 +547,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
             var isFilesValid = true ;
             var applicationStartupPath = Program.ApplicationStartupPath ?? string.Empty;
 
-            var programsFiles = this._programsFiles ;
+            var programsFiles = this.ProgramsFiles ;
             if ( programsFiles == null )
             {
                 return true ;
@@ -1278,13 +1317,16 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
             const string C_CygstdcDll = "cygstdc++-6.dll" ;
             const string C_CyggccSDll = "cyggcc_s-1.dll" ;
             const string C_IperfExe = "iperf.exe" ;
-            const string C_IperfArguments = "-y C -c" ;
+            
+            const string C_IperfWithSerialTestArguments = "-y C -c 89.106.248.22";
+            
+            const string C_IperfWithParallelTestArguments = "-c 89.106.248.22 -y C -P 5 ";
             const string C_PingExe = "ping.exe" ;
             const string C_TracertExe = "tracert.exe" ;
             const string C_TracertArguments = "-w 1000" ;
             const string C_TestResultNumericFormat = "F" ;
             const string C_BalanceTypeRequestFail = "FAIL" ;
-            const string C_SpeedTestServerAddress = "89.106.248.22" ;
+            
             const int C_MeasuresCount = 5 ;
             const string C_PostDiagnosticsResultFormat =
                 "type=lan_diag&gwrs={0}&rk1rs={1}&ggrs={2}&gwlost={3}&rk1lost={4}&gglost={5}&biggw"
@@ -1347,7 +1389,7 @@ e-mail: support@rk1.ru
             + "у 8.8.8.8" ;
         const string C_WaitWhileTestProcessed =
             "Происходит проверка связи . Пожалуйста, ждите ." ;
-            const string C_TraceComplite = "Построение маршрута завершенно";
+            const string C_TraceComplete = "Построение маршрута завершенно";
         const string C_DefaultColumnName = "Колонка" ;
 
       const string C_EmptyColumnValue = "<нет значения>" ;
@@ -1360,6 +1402,10 @@ e-mail: support@rk1.ru
             const int C_PostRequestTimeout = 999 ;
 
             // ReSharper disable PossibleNullReferenceException
+            
+            Handler.SpeedTestType = Settings.Default.UseSerialSpeedTestType
+                                        ? SpeedTestInput.TestType.Serial
+                                        : SpeedTestInput.TestType.Parallel ;
 
             Handler.QuestionPerformRestart =
                 Settings.Default.InitializeWithString
@@ -1386,9 +1432,8 @@ e-mail: support@rk1.ru
             Handler.TraceComplete =
                 Settings.Default.InitializeWithString
                     (
-                        Settings.Default.TraceComplite,
-                        C_TraceComplite);
-            //TraceComplete
+                        Settings.Default.TraceComplete,
+                        C_TraceComplete);
             Handler.NetshExecutable =
                 Settings.Default.InitializeWithString
                     (
@@ -1454,11 +1499,7 @@ e-mail: support@rk1.ru
                         (
                             Settings.Default.BalanceTypeRequestFail,
                             C_BalanceTypeRequestFail);
-                Handler.SpeedTestServerAddress =
-                    Settings.Default.InitializeWithString
-                        (
-                            Settings.Default.SpeedTestServerAddress,
-                            C_SpeedTestServerAddress);
+
                 Handler.PostDiagnosticsResultFormat =
                     Settings.Default.InitializeWithString
                         (
@@ -1596,12 +1637,31 @@ e-mail: support@rk1.ru
                               Settings.Default.SpeedTestExecutable,
                               C_IperfExe
                           );
-            Handler.SpeedTestProgramArguments =
-                Settings.Default.InitializeWithString
-                          (
-                              Settings.Default.SpeedTestProgramArguments,
-                              C_IperfArguments
-                          );
+
+            switch ( Handler.SpeedTestType )
+            {
+                case SpeedTestInput.TestType.Parallel :
+                    Handler.SpeedTestProgramArguments =
+                        Settings.Default.InitializeWithString
+                                  (
+                                      Settings.Default.SpeedTestProgramParallelTypeArguments,
+                                      C_IperfWithParallelTestArguments
+                                  );
+                    break ;
+                case SpeedTestInput.TestType.Serial :
+                    Handler.SpeedTestProgramArguments =
+                        Settings.Default.InitializeWithString
+                                  (
+                                      Settings.Default.SpeedTestProgramSerialTypeArguments,
+                                      C_IperfWithSerialTestArguments
+                                  );
+                    break ;
+                default :
+                    goto case SpeedTestInput.TestType.Parallel ;
+            }
+
+
+
             Handler.SpeedTestLibrary1 =
                 Settings.Default.InitializeWithString
                           (
@@ -1721,6 +1781,10 @@ e-mail: support@rk1.ru
         /// 
         /// </summary>
         private static string QuestionPerformRestart { get ; set ; }
+
+        /// <summary>
+        /// </summary>
+        private static SpeedTestInput.TestType SpeedTestType { get; }
 
 
         /// <summary>
@@ -1984,12 +2048,7 @@ e-mail: support@rk1.ru
         /// 
         /// </summary>
         private static int MeasuresCount { get ; set ; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static string SpeedTestServerAddress { get ; private set ; }
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -2043,91 +2102,129 @@ e-mail: support@rk1.ru
             var textLines = string.Empty ;
             var resultComponents = new string[0] ;
 
+            var executeResult = new ProcessExecuteResult (  );
+
             if ( speedTestProgramWithArgument?.Program != null )
             {
-                var executeResult =
+                executeResult =
                     speedTestProgramWithArgument
                         .Program
-                        .Execute
-                        (
-                         speedTestProgramWithArgument.HostName ) ;
+                        .Execute ( ) ;
                 if (executeResult.ExecuteStatus
                     == TaskStatus.ActionStatus.Ok)
                 {
                     textLines = executeResult.ReadToEndsResult;
                 }
 
-                if ( ! string.IsNullOrEmpty
-                           (
-                            textLines ) )
+            }
+
+            if ( !string.IsNullOrEmpty
+                      (
+                          textLines ) )
+            {
+                if ( speedTestProgramWithArgument != null )
                 {
+                    switch ( speedTestProgramWithArgument.SpeedTestType )
                     {
-                        var fileContentWithoutEol =
-                            textLines.Replace
-                                (
-                                 Environment.NewLine ,
-                                 " " )
-                                     .Replace
-                                (
-                                 newLinesSymptom ,
-                                 " " ) ;
+                        case SpeedTestInput.TestType.Parallel :
 
-                        var delimiters = new[]
-                                         {
-                                             componentsDelimiter
-                                         } ;
+                            const string C_NewLineDelimeter ="\n" ;
+                            /*const string someString = Environment.NewLine;*/
 
-                        resultComponents = fileContentWithoutEol.Split
-                            (
-                             delimiters ,
-                             StringSplitOptions.None ) ;
+                            var fileContentRows =
+                                textLines.Split
+                                    (
+                                        new[] { C_NewLineDelimeter }, StringSplitOptions.RemoveEmptyEntries)
+                                         ;
+
+                            var rowWithSummaryResult = fileContentRows
+                                [fileContentRows.GetUpperBound
+                                      (
+                                          Handler.C_FirstIndex)];
+
+                            if ( rowWithSummaryResult != null )
+                            {
+                                var delimiters = new [ ]
+                                                 {
+                                                     componentsDelimiter
+                                                 } ;
+                                resultComponents = rowWithSummaryResult.Split
+                                    (
+                                        delimiters,
+                                        StringSplitOptions.None);
+                            }
+                            break ;
+                                case SpeedTestInput.TestType.Serial :
+                            
+                            rowWithSummaryResult =
+                                textLines.Replace
+                                    (
+                                        Environment.NewLine ,
+                                        " " )
+                                         .Replace
+                                    (
+                                        newLinesSymptom ,
+                                        " " ) ;
+
+                             var componentsdelimiters = new [ ]
+                                             {
+                                                 componentsDelimiter
+                                             } ;
+
+                            resultComponents = rowWithSummaryResult.Split
+                                (
+                                    componentsdelimiters,
+                                    StringSplitOptions.None ) ;
+                            break ;
+                        default :
+                            goto case SpeedTestInput.TestType.Serial ;
                     }
                 }
+            }
 
-                if ( resultComponents.Length > 0 )
-                {
-                    var lowerBound = resultComponents.GetLowerBound
-                        (
-                         Handler.C_FirstIndex ) ;
-                    var upperBound = resultComponents.GetUpperBound
-                        (
-                         Handler.C_FirstIndex ) ;
+            if ( resultComponents.Length > 0 )
+            {
+                var lowerBound = resultComponents.GetLowerBound
+                    (
+                        Handler.C_FirstIndex ) ;
+                var upperBound = resultComponents.GetUpperBound
+                    (
+                        Handler.C_FirstIndex ) ;
 
-                    var time = timeIndex.Between
-                                   (
-                                    lowerBound ,
-                                    upperBound )
-                                   ? resultComponents[ timeIndex ]
-                                   : C_Empty ;
-                    var speedTestIp = ipIndex.Between
-                                          (
+                var time = timeIndex.Between
+                               (
+                                   lowerBound ,
+                                   upperBound )
+                               ? resultComponents [ timeIndex ]
+                               : C_Empty ;
+                var speedTestIp = ipIndex.Between
+                                      (
+                                          lowerBound ,
+                                          upperBound )
+                                      ? resultComponents [ ipIndex ]
+                                      : C_Empty ;
+
+                var dataSentVolume = volumeIndex.Between
+                                         (
+                                             lowerBound ,
+                                             upperBound )
+                                         ? resultComponents [ volumeIndex ]
+                                         : C_Empty ;
+                var networkSpeed = speedIndex.Between
+                                       (
                                            lowerBound ,
                                            upperBound )
-                                          ? resultComponents[ ipIndex ]
-                                          : C_Empty ;
+                                       ? resultComponents [ speedIndex ]
+                                       : C_Empty ;
 
-                    var dataSentVolume = volumeIndex.Between
-                                             (
-                                              lowerBound ,
-                                              upperBound )
-                                             ? resultComponents[ volumeIndex
-                                                   ]
-                                             : C_Empty ;
-                    var networkSpeed = speedIndex.Between
-                                           (
-                                            lowerBound ,
-                                            upperBound )
-                                           ? resultComponents[ speedIndex ]
-                                           : C_Empty ;
-
-                    speedTestResult.TestStatus = executeResult.ExecuteStatus ;
-                    speedTestResult.TimeMark = time ;
-                    speedTestResult.TestIp = speedTestIp ;
-                    speedTestResult.DataSentVolumeBits = dataSentVolume ;
-                    speedTestResult.NetworkSpeedBitsPerSecond = networkSpeed ;
-                    speedTestResult.CalculateIndicators( ) ;
-                }
+                speedTestResult.TestStatus = executeResult.ExecuteStatus ;
+                speedTestResult.TimeMark = time ;
+                speedTestResult.TestIp = speedTestIp ;
+                speedTestResult.DataSentVolumeBits = dataSentVolume ;
+                speedTestResult.NetworkSpeedBitsPerSecond = networkSpeed ;
+                speedTestResult.CalculateIndicators ( ) ;
             }
+
             return speedTestResult ;
         }
 
@@ -2139,7 +2236,10 @@ e-mail: support@rk1.ru
         /// <param name="zero"></param>
         /// <returns></returns>
         private static int SetValueIfNotAbove
-            ( this int ifAbove , int elseAbove , int zero = 0 )
+            (
+            this int ifAbove ,
+            int elseAbove ,
+            int zero = 0 )
         {
             return ifAbove > zero
                        ? ifAbove
@@ -2156,8 +2256,7 @@ e-mail: support@rk1.ru
         private static string SetValueIfNull
             (
             [ CanBeNull ] this string ifNull ,
-            [ NotNull ] string value
-            )
+            [ NotNull ] string value )
         {
             return ifNull ?? value ;
         }
@@ -2191,23 +2290,23 @@ e-mail: support@rk1.ru
             (
             [ NotNull ] SpeedTestsInput speedTestsInput )
         {
-            var result = new List < SpeedTestResult >( ) ;
-            var networkAdaptersParameters = Handler.GetNetworkAdaptersParameters( ) ;
+            var result = new List < SpeedTestResult > ( ) ;
+            var networkAdaptersParameters = Handler.GetNetworkAdaptersParameters ( ) ;
             {
                 var interfacesNumber = networkAdaptersParameters.Count ;
-                if (( interfacesNumber > 0 )
-                    && ( speedTestsInput.MethodsInputs != null ))
+                if ( ( interfacesNumber > 0 )
+                     && ( speedTestsInput.MethodsInputs != null ) )
                 {
                     // ReSharper disable LoopCanBeConvertedToQuery
-                    foreach (var methodsInput in speedTestsInput.MethodsInputs)
+                    foreach ( var methodsInput in speedTestsInput.MethodsInputs )
                         // ReSharper restore LoopCanBeConvertedToQuery
                     {
                         var testResult = Handler.GetSpeedTestResult
                             (
-                                methodsInput);
+                                methodsInput ) ;
                         result.Add
                             (
-                                testResult);
+                                testResult ) ;
                     }
                 }
             }
@@ -2234,36 +2333,31 @@ e-mail: support@rk1.ru
             int wordParameterIndex ,
             int attemptNumber )
         {
-            var diagnosticResult = new DiagnosticResult( ) ;
+            var diagnosticResult = new DiagnosticResult ( ) ;
 
-            var networkAdaptersParameters = Handler.GetNetworkAdaptersParameters( ) ;
+            var networkAdaptersParameters = Handler.GetNetworkAdaptersParameters ( ) ;
             {
                 var interfacesNumber = networkAdaptersParameters.Count ;
 
                 if ( interfacesNumber <= 0 )
                 {
-                    diagnosticResult.ConnectionState =
-                        DiagnosticResult.ClientConnectionState.NotFound ;
+                    diagnosticResult.ConnectionState = DiagnosticResult.ClientConnectionState.NotFound ;
                 }
                 else
                 {
-                    diagnosticResult.ConnectionState =
-                        DiagnosticResult.ClientConnectionState.Up ;
+                    diagnosticResult.ConnectionState = DiagnosticResult.ClientConnectionState.Up ;
 
-                    var networkAdapterParameters =
-                        networkAdaptersParameters.FirstOrDefault( )
-                        ?? new NetworkAdapterParameters( ) ;
+                    var networkAdapterParameters = networkAdaptersParameters.FirstOrDefault ( ) ?? new NetworkAdapterParameters ( ) ;
 
                     var gateway = networkAdapterParameters.Gateway ;
 
-                    var gatewaySmallPingResult = new PingResult( ) ;
-                    var homeSmallPingResult = new PingResult( ) ;
+                    var gatewaySmallPingResult = new PingResult ( ) ;
+                    var homeSmallPingResult = new PingResult ( ) ;
 
-                    if ( smallPingSettings[ homeParameterIndex ] != null )
+                    if ( smallPingSettings [ homeParameterIndex ] != null )
                     {
-                        var smallHomePingSettings =
-                            smallPingSettings[ homeParameterIndex ] ;
-                        var smallGatewayPingSettings = smallHomePingSettings.Copy( ) ;
+                        var smallHomePingSettings = smallPingSettings [ homeParameterIndex ] ;
+                        var smallGatewayPingSettings = smallHomePingSettings.Copy ( ) ;
                         smallGatewayPingSettings.Host = gateway ;
                         gatewaySmallPingResult = Handler.GetPingResult
                             (
@@ -2273,17 +2367,16 @@ e-mail: support@rk1.ru
                         homeSmallPingResult = Handler.GetPingResult
                             (
                                 attemptNumber ,
-                                smallPingSettings[ homeParameterIndex ] ) ;
+                                smallPingSettings [ homeParameterIndex ] ) ;
                     }
 
-                    var gatewayBigPingResult = new PingResult( ) ;
-                    var homeBigPingResult = new PingResult( ) ;
+                    var gatewayBigPingResult = new PingResult ( ) ;
+                    var homeBigPingResult = new PingResult ( ) ;
 
-                    if ( bigPingSettings[ homeParameterIndex ] != null )
+                    if ( bigPingSettings [ homeParameterIndex ] != null )
                     {
-                        var bigHomePingSettings =
-                            bigPingSettings[ homeParameterIndex ] ;
-                        var bigGatewayPingSettings = bigHomePingSettings.Copy( ) ;
+                        var bigHomePingSettings = bigPingSettings [ homeParameterIndex ] ;
+                        var bigGatewayPingSettings = bigHomePingSettings.Copy ( ) ;
 
                         bigGatewayPingSettings.Host = gateway ;
                         gatewayBigPingResult = Handler.GetPingResult
@@ -2297,23 +2390,21 @@ e-mail: support@rk1.ru
                                 bigHomePingSettings ) ;
                     }
 
-                    var wordSmallPingResult = new PingResult( ) ;
-                    var wordBigPingResult = new PingResult( ) ;
+                    var wordSmallPingResult = new PingResult ( ) ;
+                    var wordBigPingResult = new PingResult ( ) ;
 
-                    if ( smallPingSettings[ wordParameterIndex ] != null )
+                    if ( smallPingSettings [ wordParameterIndex ] != null )
                     {
-                        var smallWordPingSettings =
-                            smallPingSettings[ wordParameterIndex ] ;
+                        var smallWordPingSettings = smallPingSettings [ wordParameterIndex ] ;
                         wordSmallPingResult = Handler.GetPingResult
                             (
                                 attemptNumber ,
                                 smallWordPingSettings ) ;
                     }
 
-                    if ( bigPingSettings[ wordParameterIndex ] != null )
+                    if ( bigPingSettings [ wordParameterIndex ] != null )
                     {
-                        var bigWordPingSettings =
-                            bigPingSettings[ wordParameterIndex ] ;
+                        var bigWordPingSettings = bigPingSettings [ wordParameterIndex ] ;
                         wordBigPingResult = Handler.GetPingResult
                             (
                                 attemptNumber ,
@@ -2324,61 +2415,47 @@ e-mail: support@rk1.ru
                         (
                             speedTestProgramWithArguments ) ;
 
-                    diagnosticResult.AdapterName =
-                        networkAdapterParameters.AdapterName ;
-                    diagnosticResult.BigGatewayFailRatio =
-                        gatewayBigPingResult.LostRatio.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
-                    diagnosticResult.BigGatewayResponseTime =
-                        gatewayBigPingResult.AverageRoundtripTime.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
-                    diagnosticResult.BigHomeFailRatio =
-                        homeBigPingResult.LostRatio.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
-                    diagnosticResult.BigHomeResponseTime =
-                        homeBigPingResult.AverageRoundtripTime.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
-                    diagnosticResult.BigWordFailRatio =
-                        wordBigPingResult.LostRatio.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
-                    diagnosticResult.BigWordResponseTime =
-                        wordBigPingResult.AverageRoundtripTime.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.AdapterName = networkAdapterParameters.AdapterName ;
+                    diagnosticResult.BigGatewayFailRatio = gatewayBigPingResult.LostRatio.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.BigGatewayResponseTime = gatewayBigPingResult.AverageRoundtripTime.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.BigHomeFailRatio = homeBigPingResult.LostRatio.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.BigHomeResponseTime = homeBigPingResult.AverageRoundtripTime.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.BigWordFailRatio = wordBigPingResult.LostRatio.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.BigWordResponseTime = wordBigPingResult.AverageRoundtripTime.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
                     diagnosticResult.ClientIp = networkAdapterParameters.Address ;
                     diagnosticResult.ClientMac = networkAdapterParameters.MacAddress ;
                     diagnosticResult.ClientSpeedTestIp = speedTestResult.TestIp ;
-                    diagnosticResult.LanSpeed =
-                        speedTestResult.NetworkSpeedBitsPerSecond ;
-                    diagnosticResult.SmallGatewayFailRatio = gatewaySmallPingResult
-                        .LostRatio.ToString
+                    diagnosticResult.LanSpeed = speedTestResult.NetworkSpeedBitsPerSecond ;
+                    diagnosticResult.SmallGatewayFailRatio = gatewaySmallPingResult.LostRatio.ToString
                         (
                             CultureInfo.InvariantCulture ) ;
-                    diagnosticResult.SmallGatewayResponseTime =
-                        gatewaySmallPingResult.AverageRoundtripTime.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
-                    diagnosticResult.SmallHomeFailRatio =
-                        homeSmallPingResult.LostRatio.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
-                    diagnosticResult.SmallHomeResponseTime =
-                        homeSmallPingResult.AverageRoundtripTime.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
-                    diagnosticResult.SmallWordFailRatio =
-                        wordSmallPingResult.LostRatio.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
-                    diagnosticResult.SmallWordResponseTime =
-                        wordSmallPingResult.AverageRoundtripTime.ToString
-                            (
-                                CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.SmallGatewayResponseTime = gatewaySmallPingResult.AverageRoundtripTime.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.SmallHomeFailRatio = homeSmallPingResult.LostRatio.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.SmallHomeResponseTime = homeSmallPingResult.AverageRoundtripTime.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.SmallWordFailRatio = wordSmallPingResult.LostRatio.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
+                    diagnosticResult.SmallWordResponseTime = wordSmallPingResult.AverageRoundtripTime.ToString
+                        (
+                            CultureInfo.InvariantCulture ) ;
                 }
             }
 
@@ -2396,11 +2473,9 @@ e-mail: support@rk1.ru
             int attemptNumber ,
             [ NotNull ] PingParameters smallHomePingSettings )
         {
-            var pingResult = new PingResult
-                (
-                smallHomePingSettings ,
-                attemptNumber ) ;
-            pingResult.Calculate( ) ;
+            var pingResult = new PingResult ( smallHomePingSettings ,
+                                              attemptNumber ) ;
+            pingResult.Calculate ( ) ;
 
             return pingResult ;
         }
@@ -2410,13 +2485,11 @@ e-mail: support@rk1.ru
         /// </summary>
         /// <returns></returns>
         [ NotNull ]
-        public static List < NetworkAdapterParameters >
-            GetNetworkAdaptersParameters ( )
+        public static List < NetworkAdapterParameters > GetNetworkAdaptersParameters ( )
         {
-            var networkAdaptersParameters =
-                new List < NetworkAdapterParameters >( ) ;
+            var networkAdaptersParameters = new List < NetworkAdapterParameters > ( ) ;
 
-            var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces( ) ;
+            var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces ( ) ;
 
             foreach ( var networkInterface in networkInterfaces )
             {
@@ -2432,31 +2505,30 @@ e-mail: support@rk1.ru
                 var adapterName = string.Empty ;
                 var clientMacAddress = string.Empty ;
 
-                if ( ! Handler.GetClientNetworkInterfaceProperties
-                           (
-                            networkInterface ,
-                            ref connectionName ,
-                            ref clientAddress ,
-                            ref clientMask ,
-                            ref clientGateway ,
-                            ref clientDns ,
-                            ref adapterName ,
-                            ref clientMacAddress ) )
+                if ( !Handler.GetClientNetworkInterfaceProperties
+                          (
+                              networkInterface ,
+                              ref connectionName ,
+                              ref clientAddress ,
+                              ref clientMask ,
+                              ref clientGateway ,
+                              ref clientDns ,
+                              ref adapterName ,
+                              ref clientMacAddress ) )
                 {
                     continue ;
                 }
                 // ReSharper disable UseObjectOrCollectionInitializer
                 var networkAdapterParameters = new NetworkAdapterParameters
                     // ReSharper restore UseObjectOrCollectionInitializer
-                    (
-                    clientAddress ,
-                    clientGateway ,
-                    clientMacAddress ,
-                    clientDns ) ;
+                    ( clientAddress ,
+                      clientGateway ,
+                      clientMacAddress ,
+                      clientDns ) ;
                 networkAdapterParameters.AdapterName = adapterName ;
                 networkAdaptersParameters.Add
                     (
-                     networkAdapterParameters ) ;
+                        networkAdapterParameters ) ;
             }
 
             return networkAdaptersParameters ;
@@ -2488,61 +2560,59 @@ e-mail: support@rk1.ru
             IPAddress clientIpAddress = null ;
             IPAddress clientDnsAddress = null ;
 
-            if (networkInterface != null)
+            if ( networkInterface != null )
             {
-                if (networkInterface.OperationalStatus != OperationalStatus.Up)
+                if ( networkInterface.OperationalStatus != OperationalStatus.Up )
                 {
-                    return false;
+                    return false ;
                 }
-                var ipProperties = networkInterface.GetIPProperties();
+                var ipProperties = networkInterface.GetIPProperties ( ) ;
 
-                if (ipProperties != null)
+                if ( ipProperties != null )
                 {
                     var gatewaysAddresses = Handler.GetGatewaysIpAddresses
                         (
-                            ipProperties);
-                    var clientGatewayAddress = Handler
-                        .GetOperativeIpFromAddresses
+                            ipProperties ) ;
+                    var clientGatewayAddress = Handler.GetOperativeIpFromAddresses
                         (
-                            gatewaysAddresses);
+                            gatewaysAddresses ) ;
 
-                    if (clientGatewayAddress != null)
+                    if ( clientGatewayAddress != null )
                     {
                         var dnsAddresses = Handler.GetDnsIpAddresses
                             (
-                                ipProperties);
+                                ipProperties ) ;
                         clientDnsAddress = Handler.GetOperativeIpFromAddresses
                             (
-                                dnsAddresses);
+                                dnsAddresses ) ;
                     }
-                    if (clientDnsAddress != null)
+                    if ( clientDnsAddress != null )
                     {
-                        var interfaceIpV4Addresses = Handler
-                            .GetInterfaceIpV4Addresses
+                        var interfaceIpV4Addresses = Handler.GetInterfaceIpV4Addresses
                             (
-                                ipProperties);
+                                ipProperties ) ;
 
                         clientIpAddress = Handler.GetClientIpAddress
                             (
-                                out clientAddressMask,
-                                interfaceIpV4Addresses);
+                                out clientAddressMask ,
+                                interfaceIpV4Addresses ) ;
                     }
-                    if (clientIpAddress != null)
+                    if ( clientIpAddress != null )
                     {
-                        clientAddress = clientIpAddress.ToString();
-                        clientGateway = clientGatewayAddress.ToString();
-                        clientMacAddress = networkInterface.GetPhysicalAddress()
-                                                           .ToString();
-                        clientDns = clientDnsAddress.ToString();
-                        if ( networkInterface . Description != null )
+                        clientAddress = clientIpAddress.ToString ( ) ;
+                        clientGateway = clientGatewayAddress.ToString ( ) ;
+                        clientMacAddress = networkInterface.GetPhysicalAddress ( ).
+                                                            ToString ( ) ;
+                        clientDns = clientDnsAddress.ToString ( ) ;
+                        if ( networkInterface.Description != null )
                         {
-                            adapterName = networkInterface.Description;
+                            adapterName = networkInterface.Description ;
                         }
-                        if ( networkInterface . Name != null )
+                        if ( networkInterface.Name != null )
                         {
-                            connectionName = networkInterface.Name;
+                            connectionName = networkInterface.Name ;
                         }
-                        addressFound = true;
+                        addressFound = true ;
                     }
                 }
             }
@@ -2554,78 +2624,71 @@ e-mail: support@rk1.ru
         /// <param name="clientAddressMask"></param>
         /// <param name="interfaceIpV4Addresses"></param>
         /// <returns></returns>
-        [CanBeNull]
+        [ CanBeNull ]
         private static IPAddress GetClientIpAddress
             (
-            out string clientAddressMask,
-            [CanBeNull] ICollection<InterfaceIpV4Address> interfaceIpV4Addresses)
+            out string clientAddressMask ,
+            [ CanBeNull ] ICollection < InterfaceIpV4Address > interfaceIpV4Addresses )
         {
-            IPAddress clientIpAddress = null;
-            clientAddressMask = string.Empty;
-            var ipV4InterfacesCount = interfaceIpV4Addresses?.Count;
-            if (ipV4InterfacesCount > 0)
+            IPAddress clientIpAddress = null ;
+            clientAddressMask = string.Empty ;
+            var ipV4InterfacesCount = interfaceIpV4Addresses?.Count ;
+            if ( ipV4InterfacesCount > 0 )
             {
-                foreach (
-                    var interfaceIpV4Address in interfaceIpV4Addresses)
+                foreach ( var interfaceIpV4Address in interfaceIpV4Addresses )
                 {
-                    var interfaceAddress =
-                        interfaceIpV4Address?.InterfaceIpAddress;
-                    if (interfaceAddress != null)
+                    var interfaceAddress = interfaceIpV4Address?.InterfaceIpAddress ;
+                    if ( interfaceAddress != null )
                     {
                         clientIpAddress = Handler.GetOperativeIpAddress
                             (
-                             interfaceAddress);
+                                interfaceAddress ) ;
                     }
-                    if (clientIpAddress == null)
+                    if ( clientIpAddress == null )
                     {
-                        continue;
+                        continue ;
                     }
-                    if ( interfaceIpV4Address . AddressSubnetMask != null )
+                    if ( interfaceIpV4Address.AddressSubnetMask != null )
                     {
-                        clientAddressMask =
-                            interfaceIpV4Address.AddressSubnetMask;
+                        clientAddressMask = interfaceIpV4Address.AddressSubnetMask ;
                     }
-                    break;
+                    break ;
                 }
             }
-            return clientIpAddress;
+            return clientIpAddress ;
         }
 
         /// <summary>
         /// </summary>
         /// <param name="ipProperties"></param>
         /// <returns></returns>
-        [NotNull]
-        private static List<InterfaceIpV4Address> GetInterfaceIpV4Addresses
+        [ NotNull ]
+        private static List < InterfaceIpV4Address > GetInterfaceIpV4Addresses
             (
-            [CanBeNull] IPInterfaceProperties ipProperties)
+            [ CanBeNull ] IPInterfaceProperties ipProperties )
         {
-            var interfaceIpV4Addresses =
-                new List<InterfaceIpV4Address>();
-            var unicastAddresses = ipProperties?.UnicastAddresses;
+            var interfaceIpV4Addresses = new List < InterfaceIpV4Address > ( ) ;
+            var unicastAddresses = ipProperties?.UnicastAddresses ;
 
-            var unicastCount = unicastAddresses?.Count;
-            if (unicastCount > 0)
+            var unicastCount = unicastAddresses?.Count ;
+            if ( unicastCount > 0 )
             {
                 // ReSharper disable LoopCanBeConvertedToQuery
-                foreach (var address in unicastAddresses)
+                foreach ( var address in unicastAddresses )
                     // ReSharper restore LoopCanBeConvertedToQuery
                 {
-                    if ( ( address ? . IPv4Mask != null )
-                         && ( address . Address != null ) )
+                    if ( ( address?.IPv4Mask != null )
+                         && ( address.Address != null ) )
                     {
-                        var interfaceAddress = new InterfaceIpV4Address
-                            (
-                            address . Address ,
-                            address . IPv4Mask . ToString ( ) ) ;
-                        interfaceIpV4Addresses . Add
+                        var interfaceAddress = new InterfaceIpV4Address ( address.Address ,
+                                                                          address.IPv4Mask.ToString ( ) ) ;
+                        interfaceIpV4Addresses.Add
                             (
                                 interfaceAddress ) ;
-
                     }
                 }
             }
-            return interfaceIpV4Addresses;
+            return interfaceIpV4Addresses ;
         }
 
         // ReSharper disable UnusedMember.Local
@@ -2639,7 +2702,7 @@ e-mail: support@rk1.ru
             // ReSharper restore UnusedMember.Local
         {
             var unicastAddressesCollection = ipProperties.UnicastAddresses ;
-            var unicastAddresses = new List < IPAddress >( ) ;
+            var unicastAddresses = new List < IPAddress > ( ) ;
             var unicastCount = unicastAddressesCollection?.Count ;
             if ( unicastCount > 0 )
             {
@@ -2652,7 +2715,7 @@ e-mail: support@rk1.ru
                         var ipAddress = address.Address ;
                         unicastAddresses.Add
                             (
-                             ipAddress ) ;
+                                ipAddress ) ;
                     }
                 }
             }
@@ -2669,7 +2732,7 @@ e-mail: support@rk1.ru
             [ NotNull ] IPInterfaceProperties ipProperties )
         {
             var gatewaysAddressesCollection = ipProperties.GatewayAddresses ;
-            var gatewaysAddresses = new List < IPAddress >( ) ;
+            var gatewaysAddresses = new List < IPAddress > ( ) ;
             // ReSharper disable LoopCanBeConvertedToQuery
             if ( gatewaysAddressesCollection != null )
             {
@@ -2681,7 +2744,7 @@ e-mail: support@rk1.ru
                         var ipAddress = addresses.Address ;
                         gatewaysAddresses.Add
                             (
-                             ipAddress ) ;
+                                ipAddress ) ;
                     }
                 }
             }
@@ -2697,7 +2760,7 @@ e-mail: support@rk1.ru
             (
             [ NotNull ] IPInterfaceProperties ipProperties )
         {
-            var dnsAddresses = new List < IPAddress >( ) ;
+            var dnsAddresses = new List < IPAddress > ( ) ;
             var dnsAddressesCollection = ipProperties.DnsAddresses ;
 
             var dnsCount = dnsAddressesCollection?.Count ;
@@ -2710,7 +2773,7 @@ e-mail: support@rk1.ru
                     var ipAddress = addresses ;
                     dnsAddresses.Add
                         (
-                         ipAddress ) ;
+                            ipAddress ) ;
                 }
             }
             return dnsAddresses ;
@@ -2736,7 +2799,7 @@ e-mail: support@rk1.ru
                     {
                         clientGatewayAddress = Handler.GetOperativeIpAddress
                             (
-                             gatewaysAddress ) ;
+                                gatewaysAddress ) ;
                     }
                     if ( clientGatewayAddress != null )
                     {
@@ -2763,8 +2826,8 @@ e-mail: support@rk1.ru
             {
                 var isServiceAddress = Handler.IsServiceAddress
                     (
-                     address ) ;
-                if ( ! isServiceAddress )
+                        address ) ;
+                if ( !isServiceAddress )
                 {
                     clientGatewayAddress = address ;
                 }
@@ -2782,17 +2845,14 @@ e-mail: support@rk1.ru
         {
             // ReSharper disable RedundantNameQualifier
             return ( object.Equals
-                         
                          (
-                             address,
-                             IPAddress.Broadcast)
-                     || IPAddress.IsLoopback
-                            (
-                             address )
-                     || object.Equals
-                            (
                              address ,
-                             IPAddress.None ) ) ;
+                             IPAddress.Broadcast ) || IPAddress.IsLoopback
+                                                          (
+                                                              address ) || object.Equals
+                                                                               (
+                                                                                   address ,
+                                                                                   IPAddress.None ) ) ;
             // ReSharper restore RedundantNameQualifier
         }
 
@@ -2808,54 +2868,52 @@ e-mail: support@rk1.ru
                                Status = Handler.BalanceTypeRequestFail
                            } ;
 
-            if ( ( Handler.SpeedTestServerAddress != null )
-                 && ( Handler.SmallPingSettings != null )
+            if ( ( Handler.SmallPingSettings != null )
                  && ( Handler.BigPingSettings != null ) )
             {
                 var speedTestInput = new SpeedTestInput
                                      {
-                                         Program = Handler.SpeedTestProgram ,
-                                         HostName = Handler.SpeedTestServerAddress
+                                         Program = Handler.SpeedTestProgram
+                                         , SpeedTestType = SpeedTestInput.TestType.Parallel
                                      } ;
 
                 var diagnosticResult = Handler.GetDiagnosticResult
                     (
-                     Handler.SmallPingSettings ,
-                     Handler.BigPingSettings ,
-                     speedTestInput ,
-                     Handler.C_HomeParameterIndex ,
-                     Handler.C_WordParameterIndex ,
-                     Handler.MeasuresCount ) ;
+                        Handler.SmallPingSettings ,
+                        Handler.BigPingSettings ,
+                        speedTestInput ,
+                        Handler.C_HomeParameterIndex ,
+                        Handler.C_WordParameterIndex ,
+                        Handler.MeasuresCount ) ;
 
-                if ( ( diagnosticResult.ConnectionState
-                       == DiagnosticResult.ClientConnectionState.Up )
+                if ( ( diagnosticResult.ConnectionState == DiagnosticResult.ClientConnectionState.Up )
                      && ( Handler.PostDiagnosticsResultFormat != null ) )
                 {
                     var diagnosticsReportString = string.Format
                         (
-                         Handler.PostDiagnosticsResultFormat ,
-                         diagnosticResult.SmallGatewayResponseTime ,
-                         diagnosticResult.SmallHomeResponseTime ,
-                         diagnosticResult.SmallWordResponseTime ,
-                         diagnosticResult.SmallGatewayFailRatio ,
-                         diagnosticResult.SmallHomeFailRatio ,
-                         diagnosticResult.SmallWordFailRatio ,
-                         diagnosticResult.BigGatewayResponseTime ,
-                         diagnosticResult.BigHomeResponseTime ,
-                         diagnosticResult.BigWordResponseTime ,
-                         diagnosticResult.BigGatewayFailRatio ,
-                         diagnosticResult.BigHomeFailRatio ,
-                         diagnosticResult.BigWordFailRatio ,
-                         diagnosticResult.ClientSpeedTestIp ,
-                         diagnosticResult.LanSpeed ,
-                         Program.OsName ,
-                         diagnosticResult.ClientIp ,
-                         diagnosticResult.ClientMac ,
-                         diagnosticResult.AdapterName ) ;
+                            Handler.PostDiagnosticsResultFormat ,
+                            diagnosticResult.SmallGatewayResponseTime ,
+                            diagnosticResult.SmallHomeResponseTime ,
+                            diagnosticResult.SmallWordResponseTime ,
+                            diagnosticResult.SmallGatewayFailRatio ,
+                            diagnosticResult.SmallHomeFailRatio ,
+                            diagnosticResult.SmallWordFailRatio ,
+                            diagnosticResult.BigGatewayResponseTime ,
+                            diagnosticResult.BigHomeResponseTime ,
+                            diagnosticResult.BigWordResponseTime ,
+                            diagnosticResult.BigGatewayFailRatio ,
+                            diagnosticResult.BigHomeFailRatio ,
+                            diagnosticResult.BigWordFailRatio ,
+                            diagnosticResult.ClientSpeedTestIp ,
+                            diagnosticResult.LanSpeed ,
+                            Program.OsName ,
+                            diagnosticResult.ClientIp ,
+                            diagnosticResult.ClientMac ,
+                            diagnosticResult.AdapterName ) ;
 
                     response = Handler.SendRequestWithBalanceTypeResponce
                         (
-                         diagnosticsReportString ) ;
+                            diagnosticsReportString ) ;
                 }
             }
 
@@ -2870,7 +2928,7 @@ e-mail: support@rk1.ru
             (
             [ NotNull ] Form thisForm )
         {
-            thisForm.Close( ) ;
+            thisForm.Close ( ) ;
         }
 
         /// <summary>
@@ -2884,29 +2942,28 @@ e-mail: support@rk1.ru
         public static void ProcessAutoRunOption
             (
             [ CanBeNull ] ToolStripMenuItem toolStripMenuItem ,
-            [CanBeNull] RegistryKey userStartUpRunApplicationRegistryKey ,
-            [CanBeNull] string applicationsExecutablePath ,
+            [ CanBeNull ] RegistryKey userStartUpRunApplicationRegistryKey ,
+            [ CanBeNull ] string applicationsExecutablePath ,
             // ReSharper disable UnusedParameter.Global
-            [CanBeNull] string applicationName ,
+            [ CanBeNull ] string applicationName ,
             // ReSharper restore UnusedParameter.Global
-            [CanBeNull] string registryKeyName )
+            [ CanBeNull ] string registryKeyName )
         {
-
             var registryApplicationsExecutablePath = string.Format
                 (
-                 "{0}{1}{0}" ,
-                 '"' ,
-                 applicationsExecutablePath ) ;
+                    "{0}{1}{0}" ,
+                    '"' ,
+                    applicationsExecutablePath ) ;
 
             var setUpAutorunResult = Handler.ProcessAutorun
                 (
-                 Handler.C_SetAutorun,
-                 userStartUpRunApplicationRegistryKey,
-                 registryApplicationsExecutablePath,
-                 registryKeyName);
+                    Handler.C_SetAutorun ,
+                    userStartUpRunApplicationRegistryKey ,
+                    registryApplicationsExecutablePath ,
+                    registryKeyName ) ;
             if ( toolStripMenuItem != null )
             {
-                toolStripMenuItem.Checked = setUpAutorunResult;
+                toolStripMenuItem.Checked = setUpAutorunResult ;
             }
         }
 
@@ -2921,13 +2978,12 @@ e-mail: support@rk1.ru
         public static bool ProcessAutorun
             (
             bool setOrDisableAutorun ,
-            [CanBeNull] RegistryKey userStartUpRunApplicationRegistryKey ,
-            [CanBeNull] string setAutoRunPath ,
-            [CanBeNull] string registryKeyName )
+            [ CanBeNull ] RegistryKey userStartUpRunApplicationRegistryKey ,
+            [ CanBeNull ] string setAutoRunPath ,
+            [ CanBeNull ] string registryKeyName )
         {
             var isActionSuccessful = false ;
-            if ( setOrDisableAutorun 
-                && (setAutoRunPath != null))
+            if ( setOrDisableAutorun && ( setAutoRunPath != null ) )
             {
                 try
                 {
@@ -2941,7 +2997,7 @@ e-mail: support@rk1.ru
                 {
                     MessageBox.Show
                         (
-                         Handler.AutorunEnablingError ) ;
+                            Handler.AutorunEnablingError ) ;
                 }
             }
             else
@@ -2961,7 +3017,7 @@ e-mail: support@rk1.ru
                 {
                     MessageBox.Show
                         (
-                         Handler.AutorunDisablingError ) ;
+                            Handler.AutorunDisablingError ) ;
                 }
             }
 
@@ -2987,121 +3043,116 @@ e-mail: support@rk1.ru
             // ReSharper restore FunctionComplexityOverflow
             // ReSharper restore FunctionComplexityOverflow
             (
-            [ CanBeNull ] string applicationName,
-            [CanBeNull] string applicationStartupPath,
-            [CanBeNull] RegistryKey userStartUpRunApplicationRegistryKey,
-            [CanBeNull] ToolStripMenuItem autorunMenuItem,
-            [CanBeNull] string applicationFilename,
-            [CanBeNull] string applicationFileExtension,
-            bool isSilent,
-            [CanBeNull] string applicationVersion,
-            [CanBeNull] string registryKeyName,
-            [CanBeNull] string updateStorageLocation)
+            [ CanBeNull ] string applicationName ,
+            [ CanBeNull ] string applicationStartupPath ,
+            [ CanBeNull ] RegistryKey userStartUpRunApplicationRegistryKey ,
+            [ CanBeNull ] ToolStripMenuItem autorunMenuItem ,
+            [ CanBeNull ] string applicationFilename ,
+            [ CanBeNull ] string applicationFileExtension ,
+            bool isSilent ,
+            [ CanBeNull ] string applicationVersion ,
+            [ CanBeNull ] string registryKeyName ,
+            [ CanBeNull ] string updateStorageLocation )
         {
-            var isUpdateChecked = false;
+            var isUpdateChecked = false ;
 
-            var isConnected = Handler.IsConnected();
-            if (!isConnected
-                && !isSilent)
+            var isConnected = Handler.IsConnected ( ) ;
+            if ( !isConnected
+                 && !isSilent )
             {
                 MessageBox.Show
                     (
-                        Handler.DisconnectOrInvalidConnection);
+                        Handler.DisconnectOrInvalidConnection ) ;
             }
-            var updateVersion = string.Empty;
-            if (isConnected)
+            var updateVersion = string.Empty ;
+            if ( isConnected )
             {
                 updateVersion = Handler.GetFtpFileContent
                     (
-                        Handler.UpdateStorageLocation,
-                        Handler.UpdateVersionFilename,
-                        Handler.AnonymousFtpUserName,
-                        Handler.AnonymousPassword
-                    );
+                        Handler.UpdateStorageLocation ,
+                        Handler.UpdateVersionFilename ,
+                        Handler.AnonymousFtpUserName ,
+                        Handler.AnonymousPassword ) ;
             }
 
-            if (!string.IsNullOrEmpty
-                     (
-                         updateVersion))
+            if ( !string.IsNullOrEmpty
+                      (
+                          updateVersion ) )
             {
-                isUpdateChecked = true;
+                isUpdateChecked = true ;
             }
 
-            var isUpdateGreaterThanCurrent =
-                Handler.IsVersionGreater
-                    (
-                        updateVersion,
-                        applicationVersion);
+            var isUpdateGreaterThanCurrent = Handler.IsVersionGreater
+                (
+                    updateVersion ,
+                    applicationVersion ) ;
 
-            var letDownloadUpdate = false;
+            var letDownloadUpdate = false ;
 
-            if (isUpdateGreaterThanCurrent)
+            if ( isUpdateGreaterThanCurrent )
             {
                 var userDecision = MessageBox.Show
                     (
-                        Handler.NewVersionAvailable,
-                        applicationName,
-                        Handler.C_MessageBoxButtons,
-                        Handler.C_MessageBoxIcon);
+                        Handler.NewVersionAvailable ,
+                        applicationName ,
+                        Handler.C_MessageBoxButtons ,
+                        Handler.C_MessageBoxIcon ) ;
 
-                letDownloadUpdate = (userDecision == Handler.C_UserAnswerYes);
+                letDownloadUpdate = ( userDecision == Handler.C_UserAnswerYes ) ;
             }
             else
             {
-                if (!isSilent)
+                if ( !isSilent )
                 {
                     MessageBox.Show
                         (
-                            Handler.ActualVersionInstalled);
+                            Handler.ActualVersionInstalled ) ;
                 }
             }
 
-            var updateDestination =
-                $"{applicationStartupPath}{Path.DirectorySeparatorChar}{applicationFilename}{updateVersion}{applicationFileExtension}" ;
+            var updateDestination = $"{applicationStartupPath}{Path.DirectorySeparatorChar}{applicationFilename}{updateVersion}{applicationFileExtension}" ;
 
-            var downloadSuccess = false;
-            if (letDownloadUpdate)
+            var downloadSuccess = false ;
+            if ( letDownloadUpdate )
             {
-
-                var updateFilename =
-                    $"{applicationFilename}{applicationFileExtension}" ;
+                var updateFilename = $"{applicationFilename}{applicationFileExtension}" ;
                 var updateSource = $"{updateStorageLocation}{updateFilename}" ;
 
                 downloadSuccess = Handler.DownloadUpdate
                     (
-                        updateDestination,
-                        updateSource);
+                        updateDestination ,
+                        updateSource ) ;
             }
 
-            var restartApplication = false;
+            var restartApplication = false ;
 
-            if (downloadSuccess)
+            if ( downloadSuccess )
             {
                 Handler.ProcessAutorun
                     (
-                        Handler.C_SetAutorun,
-                        userStartUpRunApplicationRegistryKey,
-                        updateDestination,
-                        registryKeyName);
-                autorunMenuItem.Checked = true;
+                        Handler.C_SetAutorun ,
+                        userStartUpRunApplicationRegistryKey ,
+                        updateDestination ,
+                        registryKeyName ) ;
+                autorunMenuItem.Checked = true ;
 
                 var userRestartDecision = MessageBox.Show
                     (
                         Handler.QuestionPerformRestart ,
-                        applicationName,
-                        Handler.C_MessageBoxButtons,
-                        Handler.C_MessageBoxIcon);
-                restartApplication = (userRestartDecision
-                                      == Handler.C_UserAnswerYes);
+                        applicationName ,
+                        Handler.C_MessageBoxButtons ,
+                        Handler.C_MessageBoxIcon ) ;
+                restartApplication = ( userRestartDecision == Handler.C_UserAnswerYes ) ;
             }
 
-            if (restartApplication)
+            if ( restartApplication )
             {
-                Handler.RestartApplication(
-                    updateDestination);
+                Handler.RestartApplication
+                    (
+                        updateDestination ) ;
             }
 
-            return isUpdateChecked;
+            return isUpdateChecked ;
         }
 
         /// <summary>
@@ -3109,20 +3160,18 @@ e-mail: support@rk1.ru
         /// <param name="updateDestination"></param>
         private static void RestartApplication
             (
-            [CanBeNull] string updateDestination)
+            [ CanBeNull ] string updateDestination )
         {
-
-            if (updateDestination != null)
+            if ( updateDestination != null )
             {
-                Application.Exit();
+                Application.Exit ( ) ;
                 Process.Start
                     (
-                        updateDestination);
+                        updateDestination ) ;
                 Environment.Exit
                     (
-                        Program.NormalExitCode);
+                        Program.NormalExitCode ) ;
             }
-
         }
 
         /// <summary>
@@ -3132,14 +3181,14 @@ e-mail: support@rk1.ru
         /// <returns></returns>
         private static bool DownloadUpdate
             (
-            string updateDestination,
-            string updateSource)
+            string updateDestination ,
+            string updateSource )
         {
             var isDestinationValid = Handler.CheckDestination
                 (
-                    updateDestination);
+                    updateDestination ) ;
 
-            var downloadSuccess = false;
+            var downloadSuccess = false ;
 
             if ( isDestinationValid
                  && ( Handler.AnonymousFtpUserName != null )
@@ -3162,7 +3211,7 @@ e-mail: support@rk1.ru
                             Handler.DownloadFail ) ;
                 }
             }
-            return downloadSuccess;
+            return downloadSuccess ;
         }
 
         /// <summary>
@@ -3174,63 +3223,57 @@ e-mail: support@rk1.ru
         /// <returns></returns>
         private static bool DownloadFtpFile
             (
-            [ CanBeNull ] string source,
-            string destination,
-            string userName,
-            string password)
+            [ CanBeNull ] string source ,
+            string destination ,
+            string userName ,
+            string password )
         {
-            var downloadSuccess = false;
-            if (source != null)
+            var downloadSuccess = false ;
+            if ( source != null )
             {
-                var request =
-                    (FtpWebRequest) WebRequest.Create
-                                        (
-                                            source);
-                request.Method = WebRequestMethods.Ftp.DownloadFile;
-                request.Credentials = new NetworkCredential
-                    (
-                    userName,
-                    password);
+                var request = ( FtpWebRequest ) WebRequest.Create
+                                                    (
+                                                        source ) ;
+                request.Method = WebRequestMethods.Ftp.DownloadFile ;
+                request.Credentials = new NetworkCredential ( userName ,
+                                                              password ) ;
 
-                const int C_BytesDownloadsPortion = 1024;
-                var buffer = new byte[C_BytesDownloadsPortion];
-                using (var reader =
-                    request.GetResponse()
-                           .GetResponseStream())
+                const int C_BytesDownloadsPortion = 1024 ;
+                var buffer = new byte[ C_BytesDownloadsPortion ] ;
+                using ( var reader = request.GetResponse ( ).
+                                             GetResponseStream ( ) )
                 {
-                    using (var fileStream = new FileStream
-                        (
-                        destination,
-                        FileMode.Create))
+                    using ( var fileStream = new FileStream ( destination ,
+                                                              FileMode.Create ) )
                     {
-                        if (reader != null)
+                        if ( reader != null )
                         {
-                            var wasBytesRead = true;
-                            while (wasBytesRead)
+                            var wasBytesRead = true ;
+                            while ( wasBytesRead )
                             {
                                 var bytesRead = reader.Read
                                     (
-                                        buffer,
-                                        0,
-                                        buffer.Length);
-                                wasBytesRead = bytesRead > 0;
-                                if (wasBytesRead)
+                                        buffer ,
+                                        0 ,
+                                        buffer.Length ) ;
+                                wasBytesRead = bytesRead > 0 ;
+                                if ( wasBytesRead )
                                 {
                                     fileStream.Write
                                         (
-                                            buffer,
-                                            0,
-                                            bytesRead);
+                                            buffer ,
+                                            0 ,
+                                            bytesRead ) ;
                                 }
                             }
-                            fileStream.Flush();
-                            downloadSuccess = true;
+                            fileStream.Flush ( ) ;
+                            downloadSuccess = true ;
                         }
-                        fileStream.Close();
+                        fileStream.Close ( ) ;
                     }
                 }
             }
-            return downloadSuccess;
+            return downloadSuccess ;
         }
 
         /// <summary>
@@ -3239,48 +3282,47 @@ e-mail: support@rk1.ru
         /// <returns></returns>
         private static bool CheckDestination
             (
-            [ CanBeNull ] string updateDestination)
+            [ CanBeNull ] string updateDestination )
         {
             var destinationValid = false ;
-            if (updateDestination != null)
+            if ( updateDestination != null )
             {
-                FileInfo destination = null;
+                FileInfo destination = null ;
                 try
                 {
-                    destination = new FileInfo(updateDestination);
+                    destination = new FileInfo ( updateDestination ) ;
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
-                    
                     //throw;
                 }
 
-                if (destination != null)
+                if ( destination != null )
                 {
-                    if (destination.Exists)
+                    if ( destination.Exists )
                     {
                         try
                         {
-                            destination.Delete();
-                            destinationValid = true;
+                            destination.Delete ( ) ;
+                            destinationValid = true ;
                         }
-                        catch (Exception)
+                        catch ( Exception )
                         {
                             MessageBox.Show
                                 (
                                     string.Format
                                         (
-                                            Handler.DeletingFileError,
-                                            destination));
+                                            Handler.DeletingFileError ,
+                                            destination ) ) ;
                         }
                     }
                     else
                     {
-                        destinationValid = true;
+                        destinationValid = true ;
                     }
                 }
             }
-            return destinationValid;
+            return destinationValid ;
         }
 
         /// <summary>
@@ -3290,27 +3332,26 @@ e-mail: support@rk1.ru
         /// <returns></returns>
         private static bool IsVersionGreater
             (
-            [CanBeNull] string newVersion,
-            [CanBeNull] string currentVersion)
+            [ CanBeNull ] string newVersion ,
+            [ CanBeNull ] string currentVersion )
         {
-            var updateGreaterThanCurrent = false;
+            var updateGreaterThanCurrent = false ;
 
-            if (!string.IsNullOrEmpty
-                     (
-                         newVersion)
-                && !string.IsNullOrEmpty
-                        (
-                            currentVersion)
-                )
+            if ( !string.IsNullOrEmpty
+                      (
+                          newVersion )
+                 && !string.IsNullOrEmpty
+                         (
+                             currentVersion ) )
             {
-                var currentVersionString = currentVersion;
+                var currentVersionString = currentVersion ;
 
-                var current = new Version(currentVersionString);
-                var update = new Version(newVersion);
+                var current = new Version ( currentVersionString ) ;
+                var update = new Version ( newVersion ) ;
 
-                updateGreaterThanCurrent = update > current;
+                updateGreaterThanCurrent = update > current ;
             }
-            return updateGreaterThanCurrent;
+            return updateGreaterThanCurrent ;
         }
 
         /// <summary>
@@ -3321,63 +3362,59 @@ e-mail: support@rk1.ru
         /// <param name="password"></param>
         /// <returns></returns>
         [ CanBeNull ]
-        private static string GetFtpFileContent(
-            [ CanBeNull ] string location,
-            [ CanBeNull ] string filename,
-            [ CanBeNull ] string userName,
-            [ CanBeNull ] string password)
+        private static string GetFtpFileContent
+            (
+            [ CanBeNull ] string location ,
+            [ CanBeNull ] string filename ,
+            [ CanBeNull ] string userName ,
+            [ CanBeNull ] string password )
         {
-            
-            string updateVersionString = null;
+            string updateVersionString = null ;
             try
             {
                 var updateVersionSource = $"{location}{filename}" ;
-                var request = (FtpWebRequest) WebRequest.Create
-                                                  (
-                                                      updateVersionSource);
-                request.Method = WebRequestMethods.Ftp.DownloadFile;
-                request.Credentials =
-                    new NetworkCredential
-                        (
-                        userName,
-                        password);
+                var request = ( FtpWebRequest ) WebRequest.Create
+                                                    (
+                                                        updateVersionSource ) ;
+                request.Method = WebRequestMethods.Ftp.DownloadFile ;
+                request.Credentials = new NetworkCredential ( userName ,
+                                                              password ) ;
 
-                var response = (FtpWebResponse) request.GetResponse();
+                var response = ( FtpWebResponse ) request.GetResponse ( ) ;
 
-                using (
-                    var responseStream = response.GetResponseStream())
+                using ( var responseStream = response.GetResponseStream ( ) )
                 {
-                    if (responseStream != null)
+                    if ( responseStream != null )
                     {
-                        var reader = new StreamReader(responseStream);
-                        updateVersionString = reader.ReadToEnd();
-                        reader.Close();
+                        var reader = new StreamReader ( responseStream ) ;
+                        updateVersionString = reader.ReadToEnd ( ) ;
+                        reader.Close ( ) ;
                     }
                 }
-                response.Close();
+                response.Close ( ) ;
             }
                 // ReSharper disable EmptyGeneralCatchClause
-            catch (Exception)
+            catch ( Exception )
                 // ReSharper restore EmptyGeneralCatchClause
             {
                 // throw;
             }
-            return updateVersionString;
+            return updateVersionString ;
         }
 
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        private static bool IsConnected()
+        private static bool IsConnected ( )
         {
-            var result = false;
-            var networkAdaptersParameters = Handler.GetNetworkAdaptersParameters();
-            var interfacesNumber = networkAdaptersParameters.Count;
-            if (interfacesNumber > 0)
+            var result = false ;
+            var networkAdaptersParameters = Handler.GetNetworkAdaptersParameters ( ) ;
+            var interfacesNumber = networkAdaptersParameters.Count ;
+            if ( interfacesNumber > 0 )
             {
-                result = true;
+                result = true ;
             }
-            return result;
+            return result ;
         }
 
         /// <summary>
@@ -3388,7 +3425,7 @@ e-mail: support@rk1.ru
         /// <summary>
         /// 
         /// </summary>
-        public static string DisconnectOrInvalidConnection { get; private set; }
+        public static string DisconnectOrInvalidConnection { get ; private set ; }
 
         /// <summary>
         /// 
@@ -3400,22 +3437,26 @@ e-mail: support@rk1.ru
         // ReSharper disable UnusedMethodReturnValue.Global
         public static void SetBalanceMessage
             // ReSharper restore UnusedMethodReturnValue.Global
-            ( [ NotNull ] NotifyIcon hostMenuNotifyIcon , [ NotNull ] string balanceString , int showTime , string title )
+            (
+            [ NotNull ] NotifyIcon hostMenuNotifyIcon ,
+            [ NotNull ] string balanceString ,
+            int showTime ,
+            string title )
         {
             var currentBalance = hostMenuNotifyIcon.Text ;
-            if ( ! string.Equals
-                       (
-                        currentBalance ,
-                        balanceString ,
-                        StringComparison.InvariantCultureIgnoreCase ) )
+            if ( !string.Equals
+                      (
+                          currentBalance ,
+                          balanceString ,
+                          StringComparison.InvariantCultureIgnoreCase ) )
             {
                 hostMenuNotifyIcon.Text = balanceString ;
                 hostMenuNotifyIcon.ShowBalloonTip
                     (
-                     showTime ,
-                     title ,
-                     balanceString ,
-                     ToolTipIcon.Info ) ;
+                        showTime ,
+                        title ,
+                        balanceString ,
+                        ToolTipIcon.Info ) ;
             }
         }
 
@@ -3428,11 +3469,11 @@ e-mail: support@rk1.ru
             Form ownerForm ,
             string applicationName )
         {
-            var balanceString = Handler.GetBalance( ) ;
+            var balanceString = Handler.GetBalance ( ) ;
             string balanceMessage ;
             if ( string.IsNullOrEmpty
                 (
-                 balanceString ) )
+                    balanceString ) )
             {
                 balanceMessage = Handler.RequestBalanceFail ;
             }
@@ -3443,10 +3484,10 @@ e-mail: support@rk1.ru
                 {
                     Handler.SetBalanceMessage
                         (
-                         notifyIcon ,
-                         balanceMessage ,
-                         Handler.ShowBalloonTipWithShortMilliseconds ,
-                         applicationName ) ;
+                            notifyIcon ,
+                            balanceMessage ,
+                            Handler.ShowBalloonTipWithShortMilliseconds ,
+                            applicationName ) ;
                 }
             }
             var messageForm = new ShowMessageForm
@@ -3456,7 +3497,7 @@ e-mail: support@rk1.ru
                               } ;
             messageForm.ShowDialog
                 (
-                 ownerForm ) ;
+                    ownerForm ) ;
         }
 
         /// <summary>
@@ -3464,19 +3505,17 @@ e-mail: support@rk1.ru
         /// </summary>
         public static void ShowContacts
             (
-            Form ownerForm
-            )
+            Form ownerForm )
         {
             var messageForm = new ShowMessageForm
-            {
-                FormTitle = Handler.ShowContactsTitle,
-                FormMessage = Handler.ShowContactsMessage
-            };
+                              {
+                                  FormTitle = Handler.ShowContactsTitle ,
+                                  FormMessage = Handler.ShowContactsMessage
+                              } ;
             messageForm.ShowDialog
                 (
-                 ownerForm);
+                    ownerForm ) ;
         }
-
 
 
         /// <summary>
@@ -3493,7 +3532,7 @@ e-mail: support@rk1.ru
         {
             var balanceString = string.Empty ;
 
-            var networkAdaptersParameters = Handler.GetNetworkAdaptersParameters( ) ;
+            var networkAdaptersParameters = Handler.GetNetworkAdaptersParameters ( ) ;
             var interfacesNumber = networkAdaptersParameters.Count ;
             if ( interfacesNumber > 0 )
             {
@@ -3501,7 +3540,7 @@ e-mail: support@rk1.ru
                 {
                     var balanceResponce = Handler.SendRequestWithBalanceTypeResponce
                         (
-                         Handler.BalanceRequest ) ;
+                            Handler.BalanceRequest ) ;
                     if ( balanceResponce != null )
                     {
                         if ( balanceResponce.Status == Handler.BalanceTypeRequestOk )
@@ -3525,15 +3564,14 @@ e-mail: support@rk1.ru
             [ NotNull ] string requestString )
         {
             const string C_PostMethod = "POST" ;
-            const string C_PostRequestContentType =
-                "application/x-www-form-urlencoded" ;
+            const string C_PostRequestContentType = "application/x-www-form-urlencoded" ;
 
             var request = ( HttpWebRequest ) WebRequest.Create
                                                  (
-                                                  Handler.C_DiagnosticApiWebAddress ) ;
+                                                     Handler.C_DiagnosticApiWebAddress ) ;
             var data = Encoding.ASCII.GetBytes
                 (
-                 requestString ) ;
+                    requestString ) ;
 
             request.Method = C_PostMethod ;
 
@@ -3545,43 +3583,40 @@ e-mail: support@rk1.ru
 
             try
             {
-                using (var stream = request.GetRequestStream())
+                using ( var stream = request.GetRequestStream ( ) )
                 {
                     stream.Write
                         (
-                            data,
-                            0,
-                            data.Length);
+                            data ,
+                            0 ,
+                            data.Length ) ;
                 }
 
-                var response = request.GetResponse() as HttpWebResponse;
+                var response = request.GetResponse ( ) as HttpWebResponse ;
 
-                if (response?.StatusCode == HttpStatusCode.OK)
+                if ( response?.StatusCode == HttpStatusCode.OK )
                 {
-                    var jsonSerializer =
-                        new DataContractJsonSerializer
-                            (typeof (BalanceTypeResponse));
+                    var jsonSerializer = new DataContractJsonSerializer ( typeof ( BalanceTypeResponse ) ) ;
 
-                    using (var stream = response.GetResponseStream())
+                    using ( var stream = response.GetResponseStream ( ) )
                     {
-                        if (stream != null)
+                        if ( stream != null )
                         {
                             var objResponse = jsonSerializer.ReadObject
                                 (
-                                 stream);
-                            jsonResponse =
-                                objResponse as BalanceTypeResponse;
+                                    stream ) ;
+                            jsonResponse = objResponse as BalanceTypeResponse ;
                         }
                     }
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 jsonResponse = new BalanceTypeResponse
                                {
-                                   Message = string.Empty,
+                                   Message = string.Empty ,
                                    Status = Handler.BalanceTypeRequestFail
-                               };
+                               } ;
             }
             return jsonResponse ;
         }
@@ -3593,7 +3628,7 @@ e-mail: support@rk1.ru
         {
             Process.Start
                 (
-                 Handler.C_PayWebPageAddress ) ;
+                    Handler.C_PayWebPageAddress ) ;
         }
     }
 }

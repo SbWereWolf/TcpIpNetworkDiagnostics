@@ -13,12 +13,60 @@ namespace RuskomDiagnostics
     {
         /// <summary>
         /// </summary>
+        private const string C_IperfWithSerialTestArguments = "-y C -c 89.106.248.22";
+
+        /// <summary>
+        /// </summary>
+        private const string C_IperfWithParallelTestArguments = "-c 89.106.248.22 -y C -P 5 ";
+        
+        /// <summary>
+        /// </summary>
         private bool _resultShown ;
+
+        /// <summary>
+        /// </summary>
+        private SpeedTestInput.TestType SpeedTestType { get ; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private ProcessExecuteParameters SpeedTestProgram { get ; }
+
+        /// <summary>
+        /// </summary>
+        private static string SpeedTestProgramArguments { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         private delegate void TestingFinishDelegate ( ) ;
+
+
+        /// <summary>
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="setting"></param>
+        /// <param name="constant"></param>
+        /// <returns></returns>
+        [NotNull]
+        private static string InitializeWithString
+            (
+            [CanBeNull]  Properties.Settings configuration,
+            [CanBeNull] string setting,
+            [CanBeNull] string constant)
+        {
+            string result;
+            if (configuration != null)
+            {
+                result = setting ?? constant;
+            }
+            else
+            {
+                result = constant;
+            }
+            result = result ?? string.Empty;
+            return result;
+        }
 
         /// <summary>
         /// 
@@ -48,10 +96,57 @@ namespace RuskomDiagnostics
         /// <summary>
         /// 
         /// </summary>
-        public SpeedTestForm ( )
+        public SpeedTestForm 
+            (
+            [ CanBeNull ] string speedTestExecutable ,
+            [ CanBeNull ] List<string> speedTestProgrammFilesList
+            )
         {
             this.InitializeComponent( ) ;
             this.OnExecutableFinish += this.WatchDog ;
+
+            var settings = Properties.Settings.Default ;
+
+            if ( settings != null )
+            {
+
+                this.SpeedTestType = settings.UseSerialSpeedTestType
+                            ? SpeedTestInput.TestType.Serial
+                            : SpeedTestInput.TestType.Parallel;
+
+                switch ( this.SpeedTestType )
+                {
+                    case SpeedTestInput.TestType.Parallel :
+
+                        SpeedTestForm.SpeedTestProgramArguments =
+                            SpeedTestForm.InitializeWithString
+                                (
+                                    settings ,
+                                    settings.SpeedTestProgramParallelTypeArguments ,
+                                    SpeedTestForm.C_IperfWithParallelTestArguments
+                                ) ;
+                        break ;
+                    case SpeedTestInput.TestType.Serial :
+                        SpeedTestForm.SpeedTestProgramArguments =
+                            SpeedTestForm.InitializeWithString
+                                (
+                                    settings ,
+                                    settings.SpeedTestProgramSerialTypeArguments ,
+                                    SpeedTestForm.C_IperfWithSerialTestArguments
+                                ) ;
+
+                        break ;
+                    default :
+                        goto case SpeedTestInput.TestType.Parallel ;
+                }
+            }
+
+            this.SpeedTestProgram = new ProcessExecuteParameters
+                (
+                speedTestExecutable,
+                SpeedTestForm.SpeedTestProgramArguments,
+                speedTestProgrammFilesList
+                );
         }
 
         /// <summary>
@@ -227,11 +322,9 @@ namespace RuskomDiagnostics
                             (
                                 new SpeedTestInput
                                 {
-                                    HostName =
-                                        Handler
-                                        .SpeedTestServerAddress ,
                                     Program =
-                                        Handler.SpeedTestProgram
+                                        outputForm.SpeedTestProgram,
+                                    SpeedTestType = outputForm.SpeedTestType
                                 } ) ;
 
                         var testConnectionThread = new Thread ( SpeedTestForm.GetSpeedTestResult ) ;
@@ -359,19 +452,4 @@ namespace RuskomDiagnostics
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public sealed class SpeedTestInput
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public ProcessExecuteParameters Program ;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string HostName { get ; set ; }
-    }
 }
