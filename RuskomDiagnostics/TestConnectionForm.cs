@@ -225,6 +225,7 @@ namespace RuskomDiagnostics
         /// <param name="gatewayAddress"></param>
         /// <param name="dnsAddress"></param>
         /// <returns></returns>
+        [ NotNull ]
         private BatchWithProgressbar InitializeTestParameters
             (
             [ CanBeNull ] ProgressBar progressControl ,

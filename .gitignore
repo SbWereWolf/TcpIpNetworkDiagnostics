@@ -210,3 +210,8 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+.svn/format
+*.svn-base
+.svn/entries
+.svn/wc.db
+*.db-journal

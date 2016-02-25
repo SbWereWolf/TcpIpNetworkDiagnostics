@@ -211,7 +211,7 @@ namespace RuskomDiagnostics
         private void HostAddressTextBox_KeyDown
             (
             object sender ,
-            KeyEventArgs e )
+            [ NotNull ] KeyEventArgs e )
         {
             if ( ( e.KeyCode == Keys.Enter ) )
             {
@@ -335,6 +335,7 @@ namespace RuskomDiagnostics
         /// <param name="defaultCellText"></param>
         /// <param name="rowsSeparator"></param>
         /// <returns></returns>
+        [ NotNull ]
         private static string GetListViewText
             (
             [CanBeNull] ListView listView,

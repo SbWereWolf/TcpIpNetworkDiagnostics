@@ -279,24 +279,24 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
         /// <summary>
         /// 
         /// </summary>
-        public long AverageRoundtripTime ;
+        public long AverageRoundtripTime { get ; private set ; }
 
         /// <summary>
         /// 
         /// </summary>
-        public double LostRatio ;
+        public double LostRatio { get ; private set ; }
 
         /// <summary>
         /// </summary>
-        private readonly long _sendCount ;
+        private long SendCount { get ; }
 
         /// <summary>
         /// </summary>
-        private readonly long _failCount ;
+        private long FailCount { get ; }
 
         /// <summary>
         /// </summary>
-        private readonly List < long > _roundtripTimes ;
+        private List < long > RoundtripTimes { get ; }
 
         /// <summary>
         /// 
@@ -316,10 +316,10 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
             [ NotNull ] PingParameters pingParameters ,
             int attemptNumber )
         {
-            this._roundtripTimes = new List < long >( ) ;
+            this.RoundtripTimes = new List < long >( ) ;
 
-            this._sendCount = 0 ;
-            this._failCount = 0 ;
+            this.SendCount = 0 ;
+            this.FailCount = 0 ;
 
             for ( var attemptCounter = 0 ;
                   attemptCounter < attemptNumber ;
@@ -328,13 +328,13 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
                 {
                     var roundtripTime = pingParameters.PerformPing( ) ;
 
-                    this._sendCount++ ;
+                    this.SendCount++ ;
                     if ( roundtripTime == PingResult.C_PingFailRoundtripDuration )
                     {
-                        this._failCount++ ;
+                        this.FailCount++ ;
                     }
 
-                    this._roundtripTimes.Add
+                    this.RoundtripTimes.Add
                         (
                             roundtripTime ) ;
                 }
@@ -350,9 +350,9 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
             var finishedTripCount = 0 ;
             var averageRoundtripTime = PingResult.C_PingFailRoundtripDuration ;
 
-            if ( this._roundtripTimes != null )
+            if ( this.RoundtripTimes != null )
             {
-                foreach ( var roundtripTime in this._roundtripTimes )
+                foreach ( var roundtripTime in this.RoundtripTimes )
                 {
                     if ( roundtripTime != PingResult.C_PingFailRoundtripDuration )
                     {
@@ -369,7 +369,7 @@ http://stackoverflow.com/questions/4015324/http-request-with-post
             }
 
             this.AverageRoundtripTime = averageRoundtripTime ;
-            var failRatio = ( ( double ) this._failCount ) / this._sendCount ;
+            var failRatio = ( ( double ) this.FailCount ) / this.SendCount ;
             this.LostRatio = failRatio ;
         }
     }
